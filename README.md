@@ -1,8 +1,9 @@
 # Vendetta Plugins
 
 ### FileSizeOnPicker
-`https://martinz64.github.io/vendetta-plugins/FileSizeOnPicker`
-Adds file sizes in the media picker
+
+`https://martinz64.github.io/vendetta-plugins/FileSizeOnPicker`  
+Adds file sizes in the media picker  
 ![Example image](FileSizeOnPicker.png)
 
 # How to install?
