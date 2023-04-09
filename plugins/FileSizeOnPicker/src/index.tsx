@@ -37,24 +37,29 @@ export default {
 
         const Pressable = findByDisplayName("Pressable",false); //importing from ReactNative doesn't work
 
-        unpatch = patcher.before("render",Pressable.default.type,([props])=>{
-            if(props.accessibilityRole == "imagebutton"){
-                if(!props.oldChildren){
-                    props.oldChildren = props.children;
-                }
-                const fileUrl = props.oldChildren[0].props?.source?.uri;
-                if(fileUrl){
-                    props.children = 
-                    <View style={styles.sizeTagWrapper}>
-                        {props.oldChildren}
-                        <View style={styles.sizeTag}>
-                            <SizeTag url={fileUrl} style={styles.sizeText}/>
-                        </View>
+        unpatch = patcher.before("render",Pressable.default.type,(args)=>{
+            if(!args) return;
+            if(!args[0]) return;
+
+            const [ props ] = args;
+
+            if(!props) return;
+            if(props.accessibilityRole != "imagebutton") return;
+            
+            if(!props.oldChildren){
+                props.oldChildren = props.children;
+            }
+            const fileUrl = props.oldChildren[0]?.props?.source?.uri;
+            if(fileUrl){
+                props.children = 
+                <View style={styles.sizeTagWrapper}>
+                    {props.oldChildren}
+                    <View style={styles.sizeTag}>
+                        <SizeTag url={fileUrl} style={styles.sizeText}/>
                     </View>
-                }
+                </View>
             }
         });
-
     },
     onUnload: () => {
         unpatch();
