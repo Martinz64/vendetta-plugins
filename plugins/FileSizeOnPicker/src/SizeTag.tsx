@@ -6,15 +6,18 @@ import { General } from "@vendetta/ui/components";
 const { Text } = General;
 
 export function SizeTag(props) {
-  const [size, setSize] = React.useState("");
-  const [loading, setLoading] = React.useState(true);
-  const { url } = props;
+    const [size, setSize] = React.useState("");
+    const [loading, setLoading] = React.useState(true);
+    const { url } = props;
 
-  const { RTNFileManager } = ReactNative.NativeModules;
+    const { NativeModules } = ReactNative;
 
     React.useEffect(() => {
         async function fetchData() {
-            RTNFileManager.getSize(url).then(size => {
+
+            const FileManager = NativeModules.DCDFileManager ?? NativeModules.RTNFileManager
+
+            FileManager.getSize(url).then(size => {
                 setSize(formatBytes(size));
                 setLoading(false);
             })
