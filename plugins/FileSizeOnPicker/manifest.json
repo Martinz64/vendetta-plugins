@@ -1,0 +1,14 @@
+{
+    "name": "FileSizeOnPicker",
+    "description": "Show the file sizes in the media picker",
+    "authors": [
+        {
+            "name": "MSMA",
+            "id": "307215253811363843"
+        }
+    ],
+    "main": "src/index.tsx",
+    "vendetta": {
+        "icon": "ic_media_upload"
+    }
+}
