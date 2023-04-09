@@ -9,6 +9,6 @@
     ],
     "main": "src/index.tsx",
     "vendetta": {
-        "icon": "ic_media_upload"
+        "icon": "ic_image"
     }
 }
