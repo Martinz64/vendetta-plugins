@@ -1,4 +1,4 @@
-import { patcher } from "@vendetta";
+import { before } from "@vendetta/patcher";
 import Settings from "./Settings";
 import { findByDisplayName } from "@vendetta/metro";
 import { ReactNative, stylesheet, constants as Constants } from "@vendetta/metro/common";
@@ -37,7 +37,7 @@ export default {
 
         const Pressable = findByDisplayName("Pressable",false); //importing from ReactNative doesn't work
 
-        unpatch = patcher.before("render",Pressable.default.type,(args)=>{
+        unpatch = before("render",Pressable.default.type,(args)=>{
             if(!args) return;
             if(!args[0]) return;
 
