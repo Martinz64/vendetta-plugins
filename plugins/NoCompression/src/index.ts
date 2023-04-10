@@ -1,9 +1,8 @@
 import { patcher } from "@vendetta";
 import { findByProps } from "@vendetta/metro";
-import { i18n } from "@vendetta/metro/common";
 
 let unpatchUploader;
-let unpatchEmbeds;
+let unpatchCompressor;
 
 export default {
     onLoad: () => {
@@ -15,19 +14,14 @@ export default {
             }
         });
 
-        const EmbedManager = findByProps("createUploadProgressEmbed")
-        unpatchEmbeds = patcher.before("createUploadProgressEmbed",EmbedManager,(args)=>{
-            let embeds = args[0];
-            //console.log("createUploadProgressEmbed",args)
-            embeds.forEach(embed => {
-                if(embed.name == i18n.Messages["ATTACHMENT_COMPRESSING"]){
-                    embed.name = i18n.Messages["ATTACHMENT_PROCESSING_SERVER"];
-                }
-            });
+        const CloudUpload = findByProps('CloudUpload').CloudUpload;
+        unpatchCompressor = patcher.before('reactNativeCompressAndExtractData', CloudUpload.prototype, function() {
+            this.reactNativeFilePrepped = true;
+            this.currentSize = this.preCompressionSize;
         });
     },
     onUnload: () => {
         unpatchUploader();
-        unpatchEmbeds();
+        unpatchCompressor();
     },
 }
