@@ -1,22 +1,18 @@
 import { patcher } from "@vendetta";
 import { findByDisplayName, findByName, findByProps, findByStoreName } from "@vendetta/metro";
-import { i18n, ReactNative } from "@vendetta/metro/common";
 import {General} from "@vendetta/ui/components"
-import AAAA from "./AAAA";
-import StatusIcon from "./StatusIcon";
-import { getStatusColor } from "./colors";
-import { findInReactTree, unfreeze } from "@vendetta/utils";
+import { findInReactTree } from "@vendetta/utils";
 import StatusIcons from "./StatusIcons";
 
 const {Text,View } = General;
 
-let unpatchUploader;
-let unpatchEmbeds;
+let unpatches = [];
+
 
 export default {
     onLoad: () => {
         const Pressable = findByDisplayName("Pressable",false); //importing from ReactNative doesn't work
-        patcher.before("render",Pressable.default.type,(args)=>{
+        unpatches.push(patcher.before("render",Pressable.default.type,(args)=>{
             if(!args) return;
             if(!args[0]) return;
             const [ props ] = args;
@@ -71,11 +67,11 @@ export default {
                     }
                 }
             }
-        });
+        }));
         
 
         const PresenceStore = findByStoreName("PresenceStore");
-        patcher.after("type",findByProps("DirectMessageRow").DirectMessageRow,(args,res) => {
+        unpatches.push(patcher.after("type",findByProps("DirectMessageRow").DirectMessageRow,(args,res) => {
             //window.dmr =res
             const userId = res.props?.user?.id
             patcher.after("type",res,(args,res) => {
@@ -89,9 +85,9 @@ export default {
                     <StatusIcons userId={userId}/>
                 </View>
             })
-        })
+        }));
 
-        patcher.after("default",findByName("ChannelHeader",false),(args,res) => {
+        unpatches.push(patcher.after("default",findByName("ChannelHeader",false),(args,res) => {
             //window.ch = res
             if(!(res.type?.type?.name == "PrivateChannelHeader")) return;
             patcher.after("type",res.type,(args,res) => {
@@ -118,11 +114,11 @@ export default {
                 const topIcons = findInReactTree(res,m => m.key == "DMTabsV2HeaderIcons")
                 topIcons.props.children = <StatusIcons userId={userId}/>
             })
-        })
+        }));
 
         },
     onUnload: () => {
-        unpatchUploader();
+        unpatches.forEach(u => u());
 
     },
 }
