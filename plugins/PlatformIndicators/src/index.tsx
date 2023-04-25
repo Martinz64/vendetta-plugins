@@ -11,6 +11,9 @@ let unpatches = [];
 
 export default {
     onLoad: () => {
+
+        //spagetti code ahead
+
         const Pressable = findByDisplayName("Pressable",false); //importing from ReactNative doesn't work
         unpatches.push(patcher.before("render",Pressable.default.type,(args)=>{
             if(!args) return;
@@ -41,6 +44,8 @@ export default {
             }
 
             if(props.accessibilityRole == "header"){
+                //non tabs v2 dm header
+
                 //window.hhhh = props.children
                 if(findInReactTree(props.children,m => m.props?.title && m.props?.icon)){
                     const header = findInReactTree(props.children,m => m.props?.title && m.props?.icon);
@@ -75,18 +80,27 @@ export default {
             //window.dmr =res
             const userId = res.props?.user?.id
             patcher.after("type",res,(args,res) => {
-                //console.log(res)
+                //console.log("DMR",res)
+
+                //tabs v2 dm list indicators
                 const comp = findInReactTree(res,m => m.props?.children[0]?.type?.displayName == "View")
                 //window.comp1 = comp.props.children[0]
                 comp.props.children[0].props.children[0] = <View style={{
                     flexDirection: 'row'
                 }}>
                     {comp.props.children[0].props.children[0]}
-                    <StatusIcons userId={userId}/>
+                    <View style={{
+                        marginLeft: 2,
+                        flexDirection: 'row'
+                    }}>
+                        <StatusIcons userId={userId}/>
+                    </View>
+                    
                 </View>
             })
         }));
 
+        //tabs v2 dm header
         unpatches.push(patcher.after("default",findByName("ChannelHeader",false),(args,res) => {
             //window.ch = res
             if(!(res.type?.type?.name == "PrivateChannelHeader")) return;
@@ -97,19 +111,24 @@ export default {
                 //console.log(res.props.children.props.children)
                 const dmTopBar = res.props.children
 
-                if(dmTopBar.props.children.key != "DMTabsV2Header"){
-                    dmTopBar.props.children = <View 
+                //if(dmTopBar.props.children.key != "DMTabsV2Header"){
+                if(!findInReactTree(res,m => m.key == "DMTabsV2Header")){
+                    //console.log("TV1FIX",dmTopBar.props.children)
+                    const container1 = findInReactTree(dmTopBar, m => m.props?.children[1]?.props?.source == 993)
+                    container1.props?.children?.push(<View 
                         key="DMTabsV2Header"    
                         style={{
-                        flexDirection: 'row'
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        alignContent: 'flex-start'
                     }}>
-                        {dmTopBar.props.children}
                         <View 
                             key="DMTabsV2HeaderIcons"
                             style={{
                                 flexDirection: 'row'
                             }}></View>
-                    </View>
+                    </View>)
+
                 }
                 const topIcons = findInReactTree(res,m => m.key == "DMTabsV2HeaderIcons")
                 topIcons.props.children = <StatusIcons userId={userId}/>
