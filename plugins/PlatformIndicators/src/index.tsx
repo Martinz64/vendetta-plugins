@@ -3,6 +3,7 @@ import { findByDisplayName, findByName, findByProps, findByStoreName } from "@ve
 import {General} from "@vendetta/ui/components"
 import { findInReactTree } from "@vendetta/utils";
 import StatusIcons from "./StatusIcons";
+import { getAssetByName, getAssetIDByName } from "@vendetta/ui/assets";
 
 const {Text,View } = General;
 
@@ -104,17 +105,19 @@ export default {
         unpatches.push(patcher.after("default",findByName("ChannelHeader",false),(args,res) => {
             //window.ch = res
             if(!(res.type?.type?.name == "PrivateChannelHeader")) return;
+
             patcher.after("type",res.type,(args,res) => {
                 if(!res.props?.children?.props?.children) return;
                 const userId = findInReactTree(res,m => m.props?.user?.id)?.props?.user?.id
                 if(!userId) return;
-                //console.log(res.props.children.props.children)
-                const dmTopBar = res.props.children
-
-                //if(dmTopBar.props.children.key != "DMTabsV2Header"){
+                
+                const dmTopBar = res.props?.children
                 if(!findInReactTree(res,m => m.key == "DMTabsV2Header")){
-                    //console.log("TV1FIX",dmTopBar.props.children)
-                    const container1 = findInReactTree(dmTopBar, m => m.props?.children[1]?.props?.source == 993)
+
+                    //note to self: don't hardcode asset ids
+                    const arrowId = getAssetIDByName("arrow-right");
+                    const container1 = findInReactTree(dmTopBar, m => m.props?.children[1]?.props?.source == arrowId)
+
                     container1.props?.children?.push(<View 
                         key="DMTabsV2Header"    
                         style={{
@@ -131,9 +134,24 @@ export default {
 
                 }
                 const topIcons = findInReactTree(res,m => m.key == "DMTabsV2HeaderIcons")
-                topIcons.props.children = <StatusIcons userId={userId}/>
+                if(topIcons){
+                    topIcons.props.children = <StatusIcons userId={userId}/>
+                }
+                
+
             })
         }));
+
+        //icons on profile
+        //might explode in a future update
+        const DefaultName = findByName("DefaultName", false);
+        unpatches.push(patcher.after("default", DefaultName, (args, res) => {
+            const user = args[0]?.user;
+            if (user === undefined) return;
+            if(!res) return;
+            res.props?.children[0]?.props?.children?.push(<StatusIcons userId={user.id}/>)
+        }));
+
 
         },
     onUnload: () => {
