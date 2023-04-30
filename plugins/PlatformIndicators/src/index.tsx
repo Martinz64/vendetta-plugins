@@ -27,6 +27,9 @@ export default {
                         if(props.children[0]?.props?.user){
                             //console.log(props.children[0]?.props?.user?.id)
                             const uid = props.children[0]?.props?.user?.id
+
+                            if(!uid) return;
+
                             //window.uuu = props
                             if(!props.children.find(m => m.key == "StatusIcons")){
                                 props.children.push(
@@ -80,6 +83,9 @@ export default {
         unpatches.push(patcher.after("type",findByProps("DirectMessageRow").DirectMessageRow,(args,res) => {
             //window.dmr =res
             const userId = res.props?.user?.id
+
+            if(!userId) return;
+
             patcher.after("type",res,(args,res) => {
                 //console.log("DMR",res)
 
@@ -149,6 +155,7 @@ export default {
             const user = args[0]?.user;
             if (user === undefined) return;
             if(!res) return;
+            if(!user.id) return;
             res.props?.children[0]?.props?.children?.push(<StatusIcons userId={user.id}/>)
         }));
 
