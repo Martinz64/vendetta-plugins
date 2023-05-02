@@ -25,7 +25,9 @@ export default {
                 if(props.children){
                     if(props.children.length >= 2){
                         if(props.children[0]?.props?.user){
-                            //console.log(props.children[0]?.props?.user?.id)
+                            //how many checks is too many?
+                            if(!props.children[0]) return;
+                            if(!props.children[0]?.props?.user) return;
                             const uid = props.children[0]?.props?.user?.id
 
                             if(!uid) return;
@@ -82,6 +84,9 @@ export default {
         const PresenceStore = findByStoreName("PresenceStore");
         unpatches.push(patcher.after("type",findByProps("DirectMessageRow").DirectMessageRow,(args,res) => {
             //window.dmr =res
+
+            //this shouldn't crash 
+            if(!res.props?.user) return;
             const userId = res.props?.user?.id
 
             if(!userId) return;
@@ -159,6 +164,12 @@ export default {
             res.props?.children[0]?.props?.children?.push(<StatusIcons userId={user.id}/>)
         }));
 
+        const Status = findByName("Status", false);
+        unpatches.push(patcher.before("default", Status, (args) => {
+            if(!args) return;
+            if(!args[0]) return;
+            args[0].isMobileOnline = false
+        }))
 
         },
     onUnload: () => {
