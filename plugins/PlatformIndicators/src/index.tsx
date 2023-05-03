@@ -164,6 +164,15 @@ export default {
             res.props?.children[0]?.props?.children?.push(<StatusIcons userId={user.id}/>)
         }));
 
+        const DisplayName = findByName("DisplayName", false);
+        unpatches.push(patcher.after("default", DisplayName, (args, res) => {
+            const user = args[0]?.user;
+            if (user === undefined) return;
+            if(!res) return;
+            if(!user.id) return;
+            res.props?.children?.props?.children[0]?.props?.children?.push(<StatusIcons userId={user.id}/>)
+        }));
+
         const Status = findByName("Status", false);
         unpatches.push(patcher.before("default", Status, (args) => {
             if(!args) return;
