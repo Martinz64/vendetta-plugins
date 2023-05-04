@@ -10,23 +10,55 @@ const SessionsStore = findByStoreName("SessionsStore");
 const UserStore = findByStoreName("UserStore");
 
 
+let statusCache;
+let statusCacheHits = 0;
+let statusCacheTimeout;
+let currentUserId;
 
-export default function StatusIcons(props) {
+function queryPresenceStoreWithCache(){
+    if(!statusCacheTimeout){
+        statusCacheTimeout = setTimeout(() => {
+            statusCacheHits = 0
+            statusCacheTimeout = null
+        },5000);
+    }
 
-    const [, forceRender] = React.useReducer(x => ~x, 0)
-    const userId = props.userId;
+    if(!statusCache || statusCacheHits == 0){
+        statusCache = PresenceStore.getState()
+        console.log("hit store")
+    }
 
+    statusCacheHits = (statusCacheHits+1) % 20
+
+    console.log("hit")
+    return statusCache
+}
+
+function getUserStatuses(userId){
     let statuses;
 
-    if(userId == UserStore.getCurrentUser().id){
+    if(!currentUserId){
+        currentUserId = UserStore.getCurrentUser().id
+    }
+
+    if(userId == currentUserId){
         statuses = Object.values(SessionsStore.getSessions()).reduce((acc: any, curr: any) => {
             if (curr.clientInfo.client !== "unknown")
                 acc[curr.clientInfo.client] = curr.status;
             return acc;
         }, {});
     } else {
-        statuses = PresenceStore.getState()?.clientStatuses[userId]
+        statuses = queryPresenceStoreWithCache()?.clientStatuses[userId]
     }
+    return statuses
+}
+
+export default function StatusIcons(props) {
+
+    //const [, forceRender] = React.useReducer(x => ~x, 0)
+    const userId = props.userId;
+
+    const statuses = getUserStatuses(userId)
     
     /*FluxDispatcher.subscribe('PRESENCE_UPDATES', u => {
         //if(u.updates.find(m => m.user?.id == userId)){
