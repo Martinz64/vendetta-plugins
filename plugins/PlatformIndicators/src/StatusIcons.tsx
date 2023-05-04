@@ -25,12 +25,12 @@ function queryPresenceStoreWithCache(){
 
     if(!statusCache || statusCacheHits == 0){
         statusCache = PresenceStore.getState()
-        console.log("hit store")
+        //console.log("hit store")
     }
 
     statusCacheHits = (statusCacheHits+1) % 20
 
-    console.log("hit")
+    //console.log("hit")
     return statusCache
 }
 
