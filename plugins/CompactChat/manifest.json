@@ -1,0 +1,14 @@
+{
+    "name": "CompactChat",
+    "description": "Compact chat",
+    "authors": [
+        {
+            "name": "MSMA",
+            "id": "307215253811363843"
+        }
+    ],
+    "main": "src/index.tsx",
+    "vendetta": {
+        "icon": "ic_person_status"
+    }
+}
