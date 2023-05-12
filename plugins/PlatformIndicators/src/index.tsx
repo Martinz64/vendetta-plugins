@@ -4,14 +4,22 @@ import {General} from "@vendetta/ui/components"
 import { findInReactTree } from "@vendetta/utils";
 import StatusIcons from "./StatusIcons";
 import { getAssetByName, getAssetIDByName } from "@vendetta/ui/assets";
+import { storage } from "@vendetta/plugin";
+import Settings from "./settings";
 
 const {Text,View } = General;
 
 let unpatches = [];
 
+//export { default as settings } from "./settings";
 
 export default {
     onLoad: () => {
+
+        storage.dmTopBar ??= true
+        storage.userList ??= true
+        storage.profileUsername ??= true
+        storage.removeDefaultMobile ??= true
 
         //spagetti code ahead
 
@@ -21,7 +29,10 @@ export default {
             if(!args[0]) return;
             const [ props ] = args;
             if(!props) return;
+
+            //user list in non tabs v2
             if(props.accessibilityRole == "button"){
+                if(!storage.userList) return;
                 if(props.children){
                     if(props.children.length >= 2){
                         if(props.children[0]?.props?.user){
@@ -52,6 +63,7 @@ export default {
             if(props.accessibilityRole == "header"){
                 //non tabs v2 dm header
 
+                if(!storage.dmTopBar) return;
                 //window.hhhh = props.children
                 if(findInReactTree(props.children,m => m.props?.title && m.props?.icon)){
                     const header = findInReactTree(props.children,m => m.props?.title && m.props?.icon);
@@ -114,6 +126,8 @@ export default {
 
         //tabs v2 dm header
         unpatches.push(patcher.after("default",findByName("ChannelHeader",false),(args,res) => {
+
+            if(!storage.dmTopBar) return;
             //window.ch = res
             if(!(res.type?.type?.name == "PrivateChannelHeader")) return;
 
@@ -161,6 +175,7 @@ export default {
             if (user === undefined) return;
             if(!res) return;
             if(!user.id) return;
+            if(!storage.profileUsername)return;
             res.props?.children[0]?.props?.children?.push(<StatusIcons userId={user.id}/>)
         }));
 
@@ -170,6 +185,7 @@ export default {
             if (user === undefined) return;
             if(!res) return;
             if(!user.id) return;
+            if(!storage.profileUsername)return;
             res.props?.children?.props?.children[0]?.props?.children?.push(<StatusIcons userId={user.id}/>)
         }));
 
@@ -177,6 +193,7 @@ export default {
         unpatches.push(patcher.before("default", Status, (args) => {
             if(!args) return;
             if(!args[0]) return;
+            if(!storage.removeDefaultMobile)return;
             args[0].isMobileOnline = false
         }))
 
@@ -185,4 +202,10 @@ export default {
         unpatches.forEach(u => u());
 
     },
+
+    settings:()=>{
+        return <Settings/>
+    }
+
 }
+
