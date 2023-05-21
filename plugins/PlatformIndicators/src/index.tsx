@@ -6,7 +6,8 @@ import StatusIcons from "./StatusIcons";
 import { getAssetByName, getAssetIDByName } from "@vendetta/ui/assets";
 import { storage } from "@vendetta/plugin";
 import Settings from "./settings";
-
+import React, { useState, useEffect } from 'react';
+import RerenderContainer from "./RerenderContainer";
 const {Text,View } = General;
 
 let unpatches = [];
@@ -22,6 +23,57 @@ export default {
         storage.removeDefaultMobile ??= true
 
         //spagetti code ahead
+
+        unpatches.push(patcher.after("render",View,(_,res) => {
+            //return;
+            const textChannel = findInReactTree(res, r => r?.props?.children[1]?.type?.name == "ChannelActivity" && r?.props?.children[1]?.props?.hasOwnProperty?.("userId"))
+            if(!textChannel)return;
+
+            //textChannel.props.children = <Text>UwU</Text>
+
+            const uid = textChannel.props.children[1].props.userId;
+
+            const target = textChannel.props.children[0]
+
+            const target2 = textChannel.props.children[0].props.children[1]
+            patcher.after("type",target2,(_,res) => {
+                console.log("SSSSSS",res)
+                if(!findInReactTree(res, m => m.key == "StatusIcons")){
+                    res = <View style={{
+                            display: 'flex',
+                            flexDirection: 'row'
+                        }}>
+                            {res}
+                            <View 
+                            key="StatusIcons"
+                            style={{
+                                display: 'flex',
+                            flexDirection: 'row'}}>
+                                <RerenderContainer>
+                                    <StatusIcons userId={uid}/>
+                                </RerenderContainer>
+                            </View>
+                    </View>
+                        
+                }
+                //const icons = findInReactTree(res, m => m.key == "StatusIcons");                            
+                //icons.props.children = <StatusIcons userId={uid}/>
+                //icons.props.children = 
+                return res
+            })
+            console.log(target)
+            /*if(!target.props.children.find(m => m.key == "StatusIcons")){
+                target.props.children.push(
+                    <View 
+                        key="StatusIcons"
+                        style={{
+                            display: 'flex',
+                    flexDirection: 'row'}}></View>
+                )
+            }
+            const icons = target.props.children.find(m => m.key == "StatusIcons");                            
+            icons.props.children = <StatusIcons userId={uid}/>*/
+        }))
 
         const Pressable = findByDisplayName("Pressable",false); //importing from ReactNative doesn't work
         unpatches.push(patcher.before("render",Pressable.default.type,(args)=>{
@@ -60,9 +112,10 @@ export default {
                 }
             }
 
+
             if(props.accessibilityRole == "header"){
                 //non tabs v2 dm header
-
+                return;
                 if(!storage.dmTopBar) return;
                 //window.hhhh = props.children
                 if(findInReactTree(props.children,m => m.props?.title && m.props?.icon)){
