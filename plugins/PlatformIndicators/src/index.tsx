@@ -27,46 +27,36 @@ export default {
         unpatches.push(patcher.after("render",View,(_,res) => {
             if(!storage.dmTopBar) return;
             //return;
+
             const textChannel = findInReactTree(res, r => r?.props?.children[1]?.type?.name == "ChannelActivity" && r?.props?.children[1]?.props?.hasOwnProperty?.("userId"))
             if(!textChannel)return;
+            //console.log("TARGETVIEW",textChannel)
+            
+            if(textChannel.props?.children?.length != 2) return;
+            if(textChannel.props?.children[0]?.props?.children?.length != 2) return;
+            
+            const target = textChannel.props?.children[0]?.props?.children
+            if(target.filter(m => m.props?.userId).length == 2){
+                const target2 = target[1]
+                const uid = target2.props?.userId;
+                if(!uid) return;
 
-            //textChannel.props.children = <Text>UwU</Text>
-
-            const uid = textChannel.props.children[1].props.userId;
-
-            const target = textChannel.props.children[0]
-
-            const target2 = textChannel.props.children[0].props.children[1]
-            patcher.after("type",target2,(_,res) => {
-                //console.log("SSSSSS",res)
-                if(!findInReactTree(res, m => m.key == "StatusIcons")){
-                    res = <View style={{
-                            display: 'flex',
-                            flexDirection: 'row'
-                        }}>
-                            {res}
-                            <RerenderContainer key="StatusIcons">
-                                <StatusIcons userId={uid}/>
-                            </RerenderContainer>
-                        </View>
-                }
-                //const icons = findInReactTree(res, m => m.key == "StatusIcons");                            
-                //icons.props.children = <StatusIcons userId={uid}/>
-                //icons.props.children = 
-                return res
-            })
-            //console.log(target)
-            /*if(!target.props.children.find(m => m.key == "StatusIcons")){
-                target.props.children.push(
-                    <View 
-                        key="StatusIcons"
-                        style={{
-                            display: 'flex',
-                    flexDirection: 'row'}}></View>
-                )
+                patcher.after("type",target2,(args,res) => {
+                    //console.log("SSSSSS",args,res)
+                    if(!findInReactTree(res, m => m.key == "StatusIcons")){
+                        res = <View style={{
+                                display: 'flex',
+                                flexDirection: 'row'
+                            }}>
+                                {res}
+                                <RerenderContainer key="StatusIcons">
+                                    <StatusIcons userId={uid}/>
+                                </RerenderContainer>
+                            </View>
+                    }
+                    return res
+                })
             }
-            const icons = target.props.children.find(m => m.key == "StatusIcons");                            
-            icons.props.children = <StatusIcons userId={uid}/>*/
         }))
 
         const Pressable = findByDisplayName("Pressable",false); //importing from ReactNative doesn't work
