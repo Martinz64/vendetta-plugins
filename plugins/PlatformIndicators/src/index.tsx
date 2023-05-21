@@ -25,6 +25,7 @@ export default {
         //spagetti code ahead
 
         unpatches.push(patcher.after("render",View,(_,res) => {
+            if(!storage.dmTopBar) return;
             //return;
             const textChannel = findInReactTree(res, r => r?.props?.children[1]?.type?.name == "ChannelActivity" && r?.props?.children[1]?.props?.hasOwnProperty?.("userId"))
             if(!textChannel)return;
@@ -37,31 +38,24 @@ export default {
 
             const target2 = textChannel.props.children[0].props.children[1]
             patcher.after("type",target2,(_,res) => {
-                console.log("SSSSSS",res)
+                //console.log("SSSSSS",res)
                 if(!findInReactTree(res, m => m.key == "StatusIcons")){
                     res = <View style={{
                             display: 'flex',
                             flexDirection: 'row'
                         }}>
                             {res}
-                            <View 
-                            key="StatusIcons"
-                            style={{
-                                display: 'flex',
-                            flexDirection: 'row'}}>
-                                <RerenderContainer>
-                                    <StatusIcons userId={uid}/>
-                                </RerenderContainer>
-                            </View>
-                    </View>
-                        
+                            <RerenderContainer key="StatusIcons">
+                                <StatusIcons userId={uid}/>
+                            </RerenderContainer>
+                        </View>
                 }
                 //const icons = findInReactTree(res, m => m.key == "StatusIcons");                            
                 //icons.props.children = <StatusIcons userId={uid}/>
                 //icons.props.children = 
                 return res
             })
-            console.log(target)
+            //console.log(target)
             /*if(!target.props.children.find(m => m.key == "StatusIcons")){
                 target.props.children.push(
                     <View 
