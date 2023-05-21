@@ -107,36 +107,7 @@ export default {
             }
 
 
-            if(props.accessibilityRole == "header"){
-                //non tabs v2 dm header
-                return;
-                if(!storage.dmTopBar) return;
-                //window.hhhh = props.children
-                if(findInReactTree(props.children,m => m.props?.title && m.props?.icon)){
-                    const header = findInReactTree(props.children,m => m.props?.title && m.props?.icon);
-                    if(header.props?.titleSuffix){
-                        if(!findInReactTree(header.props.titleSuffix,m => m.key == "DMStatusIndicators")){
-                            //props.children.props.title =
-                            header.props.titleSuffix =
-                            [
-                                header.props.titleSuffix,
-                                <View 
-                                    key="DMStatusIndicators"
-                                    style={{
-                                        flexDirection: "row"
-                                    }}></View>
-                            ]
-                        }
-                        const userId = findInReactTree(header.props.titleSuffix,m => m.props?.userId).props?.userId;
-                        if(userId){
-                            const DMStatusIndicators = findInReactTree(header.props.titleSuffix,m => m.key == "DMStatusIndicators")
-                            if(DMStatusIndicators){
-                                DMStatusIndicators.props.children = <StatusIcons userId={userId}/>
-                            }
-                        }
-                    }
-                }
-            }
+            
         }));
         
 
