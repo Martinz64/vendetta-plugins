@@ -17,7 +17,6 @@ export function SizeTag(props) {
         async function fetchData() {
             if(!sizeCache[url]){
                 const FileManager = NativeModules.DCDFileManager ?? NativeModules.RTNFileManager
-                console.log("file manager hit")
                 FileManager.getSize(url).then(size => {
                     setSize(formatBytes(size));
                     setLoading(false);
