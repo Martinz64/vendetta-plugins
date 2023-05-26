@@ -114,7 +114,6 @@ export default {
 
             patcher.after("type",res,(args,res) => {
                 //console.log("DMR",res)
-                return;
                 //tabs v2 dm list indicators
                 const comp = findInReactTree(res,m => m.props?.children[0]?.type?.displayName == "View")
                 //window.comp1 = comp.props.children[0]
