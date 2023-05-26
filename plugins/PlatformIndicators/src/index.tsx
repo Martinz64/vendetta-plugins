@@ -30,12 +30,12 @@ export default {
 
             const textChannel = findInReactTree(res, r => r?.props?.children[1]?.type?.name == "ChannelActivity" && r?.props?.children[1]?.props?.hasOwnProperty?.("userId"))
             if(!textChannel)return;
-            
+            console.log("hh")
             if(textChannel.props?.children?.length != 2) return;
             if(textChannel.props?.children[0]?.props?.children?.length != 2) return;
             
             const target = textChannel.props?.children[0]?.props?.children
-            if(target.filter(m => m.props?.userId).length == 2){
+            if(target.filter(m => m?.props?.userId).length == 2){
                 const target2 = target[1]
                 const uid = target2.props?.userId;
                 if(!uid) return;
@@ -64,7 +64,6 @@ export default {
             if(!args[0]) return;
             const [ props ] = args;
             if(!props) return;
-
             //user list in non tabs v2
             if(props.accessibilityRole == "button"){
                 if(!storage.userList) return;
@@ -77,9 +76,8 @@ export default {
                             const uid = props.children[0]?.props?.user?.id
 
                             if(!uid) return;
-
                             //window.uuu = props
-                            if(!props.children.find(m => m.key == "StatusIcons")){
+                            if(!props.children?.find(m => m.key == "StatusIcons")){
                                 props.children.push(
                                     <View 
                                         key="StatusIcons"
@@ -88,8 +86,12 @@ export default {
                                     flexDirection: 'row'}}></View>
                                 )
                             }
-                            const icons = props.children.find(m => m.key == "StatusIcons");                            
-                            icons.props.children = <StatusIcons userId={uid}/>
+
+                            //explota
+                            const icons = props.children?.find(m => m.key == "StatusIcons");                            
+                            //if(icons.props?.children){
+                                icons.props.children = <StatusIcons userId={uid}/>
+                            //}
                         }
                     }
                 }
@@ -112,7 +114,7 @@ export default {
 
             patcher.after("type",res,(args,res) => {
                 //console.log("DMR",res)
-
+                return;
                 //tabs v2 dm list indicators
                 const comp = findInReactTree(res,m => m.props?.children[0]?.type?.displayName == "View")
                 //window.comp1 = comp.props.children[0]
