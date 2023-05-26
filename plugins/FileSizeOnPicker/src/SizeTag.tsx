@@ -4,6 +4,7 @@ import { formatBytes } from "./utils";
 import { General } from "@vendetta/ui/components";
 
 const { Text } = General;
+let sizeCache = {};
 
 export function SizeTag(props) {
     const [size, setSize] = React.useState("");
@@ -14,13 +15,19 @@ export function SizeTag(props) {
 
     React.useEffect(() => {
         async function fetchData() {
-
-            const FileManager = NativeModules.DCDFileManager ?? NativeModules.RTNFileManager
-
-            FileManager.getSize(url).then(size => {
-                setSize(formatBytes(size));
+            if(!sizeCache[url]){
+                const FileManager = NativeModules.DCDFileManager ?? NativeModules.RTNFileManager
+                console.log("file manager hit")
+                FileManager.getSize(url).then(size => {
+                    setSize(formatBytes(size));
+                    setLoading(false);
+                    sizeCache[url] = size;
+                })
+            } else {
+                setSize(formatBytes(sizeCache[url]));
                 setLoading(false);
-            })
+            }
+            
         }
         fetchData();
     }, []);

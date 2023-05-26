@@ -46,6 +46,9 @@ export default {
             if(!props) return;
             if(props.accessibilityRole != "imagebutton") return;
             
+            /*props.children[props.children.length - 1] = <Text>AAAAA</Text>
+            return;*/
+
             if(!props.oldChildren){
                 props.oldChildren = props.children;
             }
