@@ -30,7 +30,6 @@ export default {
 
             const textChannel = findInReactTree(res, r => r?.props?.children[1]?.type?.name == "ChannelActivity" && r?.props?.children[1]?.props?.hasOwnProperty?.("userId"))
             if(!textChannel)return;
-            console.log("hh")
             if(textChannel.props?.children?.length != 2) return;
             if(textChannel.props?.children[0]?.props?.children?.length != 2) return;
             
