@@ -10,6 +10,7 @@ const {Text,View } = General;
 
 const RerenderContainer = ({ children }) => {
     const [counter, setCounter] = useState(0);
+
     useEffect(() => {
         const interval = setInterval(() => {
             setCounter(prevCounter => prevCounter + 1);

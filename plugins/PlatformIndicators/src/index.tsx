@@ -8,6 +8,7 @@ import { storage } from "@vendetta/plugin";
 import Settings from "./settings";
 import React, { useState, useEffect } from 'react';
 import RerenderContainer from "./RerenderContainer";
+import PresenceUpdatedContainer from "./PresenceUpdatedContainer";
 const {Text,View } = General;
 
 let unpatches = [];
@@ -26,11 +27,9 @@ export default {
 
         unpatches.push(patcher.after("render",View,(_,res) => {
             if(!storage.dmTopBar) return;
-            //return;
 
             const textChannel = findInReactTree(res, r => r?.props?.children[1]?.type?.name == "ChannelActivity" && r?.props?.children[1]?.props?.hasOwnProperty?.("userId"))
             if(!textChannel)return;
-            //console.log("TARGETVIEW",textChannel)
             
             if(textChannel.props?.children?.length != 2) return;
             if(textChannel.props?.children[0]?.props?.children?.length != 2) return;
@@ -49,9 +48,9 @@ export default {
                                 flexDirection: 'row'
                             }}>
                                 {res}
-                                <RerenderContainer key="StatusIcons">
+                                <PresenceUpdatedContainer key="StatusIcons">
                                     <StatusIcons userId={uid}/>
-                                </RerenderContainer>
+                                </PresenceUpdatedContainer>
                             </View>
                     }
                     return res
