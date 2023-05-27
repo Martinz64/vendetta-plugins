@@ -5,6 +5,7 @@ import { ReactNative, stylesheet, constants as Constants } from "@vendetta/metro
 import { semanticColors } from "@vendetta/ui";
 import { General } from "@vendetta/ui/components";
 import { SizeTag } from "./SizeTag";
+import { findInReactTree } from "@vendetta/utils";
 
 const { View,Text } = General;
 const { Pressable } = ReactNative;
@@ -52,6 +53,14 @@ export default {
             if(!props.oldChildren){
                 props.oldChildren = props.children;
             }
+            if(!props.skip){
+                if(!findInReactTree(props.oldChildren, m => m.props?.localImageSource)){
+                    props.skip = true
+                }
+            } else {
+                return
+            }
+
             const fileUrl = props.oldChildren[0]?.props?.source?.uri;
             if(fileUrl){
                 props.children = 
