@@ -35,6 +35,12 @@ export default function Settings() {
                     onValueChange={v => storage.removeDefaultMobile = v}
                     note=""
                 />
+                <Forms.FormSwitchRow
+                    label="Theme compatibility mode"
+                    value={storage.fallbackColors ?? false}
+                    onValueChange={v => storage.fallbackColors = v}
+                    note=""
+                />
             </View>
         </ScrollView>
     );

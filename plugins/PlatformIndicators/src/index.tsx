@@ -22,6 +22,7 @@ export default {
         storage.userList ??= true
         storage.profileUsername ??= true
         storage.removeDefaultMobile ??= true
+        storage.fallbackColors ??= false
 
         //spagetti code ahead
 
