@@ -1,5 +1,5 @@
 import { patcher } from "@vendetta";
-import { findByDisplayName, findByName, findByProps, findByStoreName } from "@vendetta/metro";
+import { findByDisplayName, findByName, findByProps, findByStoreName, findByTypeNameAll } from "@vendetta/metro";
 import {General} from "@vendetta/ui/components"
 import { findInReactTree } from "@vendetta/utils";
 import StatusIcons from "./StatusIcons";
@@ -69,16 +69,20 @@ export default {
                 if(!storage.userList) return;
                 if(props.children){
                     if(props.children.length >= 2){
-                        if(props.children[0]?.props?.user){
+
+                        if(props.children[0]?.props?.user && props.children[0]?.props?.channel){
                             //how many checks is too many?
                             if(!props.children[0]) return;
                             if(!props.children[0]?.props?.user) return;
                             const uid = props.children[0]?.props?.user?.id
 
+
                             if(!uid) return;
                             //window.uuu = props
                             if(!props.children?.find(m => m.key == "StatusIcons")){
+                                //props.children[0][1].props.children[0].props.children[0]
                                 props.children.push(
+                                //props.children[0][1]?.props?.children[0]?.props?.children?.push?.(
                                     <View 
                                         key="StatusIcons"
                                         style={{
@@ -204,6 +208,42 @@ export default {
             if(!storage.removeDefaultMobile)return;
             args[0].isMobileOnline = false
         }))
+
+        //
+
+        const Rows = findByProps("GuildMemberRow")
+        unpatches.push(patcher.after("type", Rows.GuildMemberRow, ([{ user }], res) => {
+            if(!storage.userList) return;
+            const statusIconsView = findInReactTree(res, (c) => c.key == "GuildMemberRowStatusIconsView");
+            if(!statusIconsView){
+                const row = findInReactTree(res, (c) => c.props.style.flexDirection === "row")
+                row.props.children.splice(2, 0,
+                    <View 
+                        key="GuildMemberRowStatusIconsView"
+                        style={{
+                            flexDirection: 'row'
+                    }}>
+                        <StatusIcons userId={user.id}/>
+                    </View>
+                )
+            }
+        }))
+
+        const rowPatch = ([{ user }], res) => {
+            if(!storage.userList) return;
+            const statusIconsView = findInReactTree(res, (c) => c.key == "TabsV2MemberListStatusIconsView");
+            if(!statusIconsView){
+                const row = findInReactTree(res.props.label, (c) => c.props?.lineClamp).props.children
+                row.props.children[1] = (
+                    <View key="TabsV2MemberListStatusIconsView">
+                        <Text> </Text>
+                        <StatusIcons userId={user.id}/>
+                    </View>
+                )
+            }
+        }
+        findByTypeNameAll("UserRow").forEach((UserRow) => unpatches.push(patcher.after("type", UserRow, rowPatch)))
+
 
         },
     onUnload: () => {
