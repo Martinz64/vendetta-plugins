@@ -210,7 +210,7 @@ export default {
         }))
 
         //
-
+        //next 2 patches taken from here: https://github.com/Fierdetta/staff-tags/
         const Rows = findByProps("GuildMemberRow")
         unpatches.push(patcher.after("type", Rows.GuildMemberRow, ([{ user }], res) => {
             if(!storage.userList) return;
