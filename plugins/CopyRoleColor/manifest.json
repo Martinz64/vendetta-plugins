@@ -1,0 +1,14 @@
+{
+    "name": "CopyRoleColor",
+    "description": "Copy a role's color as hex by long pressing it",
+    "authors": [
+        {
+            "name": "MSMA",
+            "id": "307215253811363843"
+        }
+    ],
+    "main": "src/index.tsx",
+    "vendetta": {
+        "icon": "ic_custom_color"
+    }
+}
