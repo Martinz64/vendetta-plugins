@@ -241,7 +241,12 @@ export default {
                 row.props.children[1] = (
                     <View key="TabsV2MemberListStatusIconsView">
                         <Text> </Text>
-                        <StatusIcons userId={user.id}/>
+                        <View style={{
+                            flexDirection: 'row'
+                        }}>
+                            <StatusIcons userId={user.id}/>
+                        </View>
+                        
                     </View>
                 )
             }
