@@ -23,6 +23,7 @@ export default {
         storage.profileUsername ??= true
         storage.removeDefaultMobile ??= true
         storage.fallbackColors ??= false
+        storage.oldUserListIcons ??= false
 
         //spagetti code ahead
 
@@ -70,7 +71,7 @@ export default {
                 if(props.children){
                     if(props.children.length >= 2){
 
-                        if(props.children[0]?.props?.user && props.children[0]?.props?.channel){
+                        if((props.children[0]?.props?.user && props.children[0]?.props?.channel) || storage.oldUserListIcons){
                             //how many checks is too many?
                             if(!props.children[0]) return;
                             if(!props.children[0]?.props?.user) return;
@@ -214,6 +215,8 @@ export default {
         const Rows = findByProps("GuildMemberRow")
         unpatches.push(patcher.after("type", Rows.GuildMemberRow, ([{ user }], res) => {
             if(!storage.userList) return;
+            if(storage.oldUserListIcons) return;
+
             const statusIconsView = findInReactTree(res, (c) => c.key == "GuildMemberRowStatusIconsView");
             if(!statusIconsView){
                 const row = findInReactTree(res, (c) => c.props.style.flexDirection === "row")
@@ -231,6 +234,7 @@ export default {
 
         const rowPatch = ([{ user }], res) => {
             if(!storage.userList) return;
+            if(storage.oldUserListIcons) return;
             const statusIconsView = findInReactTree(res, (c) => c.key == "TabsV2MemberListStatusIconsView");
             if(!statusIconsView){
                 const row = findInReactTree(res.props.label, (c) => c.props?.lineClamp).props.children
@@ -242,6 +246,7 @@ export default {
                 )
             }
         }
+
         findByTypeNameAll("UserRow").forEach((UserRow) => unpatches.push(patcher.after("type", UserRow, rowPatch)))
 
 

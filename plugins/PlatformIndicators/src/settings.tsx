@@ -41,6 +41,12 @@ export default function Settings() {
                     onValueChange={v => storage.fallbackColors = v}
                     note=""
                 />
+                <Forms.FormSwitchRow
+                    label="Old user list icon style"
+                    value={storage.oldUserListIcons ?? false}
+                    onValueChange={v => storage.oldUserListIcons = v}
+                    note=""
+                />
             </View>
         </ScrollView>
     );
