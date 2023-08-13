@@ -11,8 +11,11 @@ export default {
         const ThemedRolePill = findByName("ThemedRolePill",false);
         unpatches.push(patcher.after("default",ThemedRolePill,(args,res) => {
             if(res.props?.onPress){
+                let verifiedIcon = findInReactTree(res, m => m?.props?.roleColor)
                 let roleIcon = findInReactTree(res, m => m?.props?.style[0]?.borderRadius && m?.props?.style[1]?.backgroundColor?.startsWith("#"))
-                const color = roleIcon?.props?.style[1]?.backgroundColor
+                const color = roleIcon?.props?.style[1]?.backgroundColor ?? verifiedIcon?.props?.roleColor 
+
+                //console.log(roleIcon?.props?.style[1]?.backgroundColor,verifiedIcon?.props?.roleColor)
 
                 res.props.onLongPress = () => {
                     clipboard.setString(color);
