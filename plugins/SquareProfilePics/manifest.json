@@ -9,6 +9,6 @@
     ],
     "main": "src/index.tsx",
     "vendetta": {
-        "icon": "ic_person_status"
+        "icon": "ic_profile_24px"
     }
 }

@@ -9,6 +9,6 @@
     ],
     "main": "src/index.tsx",
     "vendetta": {
-        "icon": "ic_file_upload_24px"
+        "icon": "ic_share_screen"
     }
 }
