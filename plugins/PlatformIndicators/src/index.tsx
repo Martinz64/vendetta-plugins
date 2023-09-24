@@ -238,17 +238,18 @@ export default {
             const statusIconsView = findInReactTree(res, (c) => c.key == "TabsV2MemberListStatusIconsView");
             if(!statusIconsView){
                 const row = findInReactTree(res.props.label, (c) => c.props?.lineClamp).props.children
-                row.props.children[1] = (
-                    <View key="TabsV2MemberListStatusIconsView">
-                        <Text> </Text>
-                        <View style={{
-                            flexDirection: 'row'
-                        }}>
-                            <StatusIcons userId={user.id}/>
+                if(row?.props?.children){
+                    row.props.children[1] = (
+                        <View key="TabsV2MemberListStatusIconsView">
+                            <Text> </Text>
+                            <View style={{
+                                flexDirection: 'row'
+                            }}>
+                                <StatusIcons userId={user.id}/>
+                            </View>
                         </View>
-                        
-                    </View>
-                )
+                    )
+                }
             }
         }
 
