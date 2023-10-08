@@ -117,12 +117,19 @@ export default {
 
             if(!userId) return;
 
+
+
+
             patcher.after("type",res,(args,res) => {
                 //console.log("DMR",res)
                 //tabs v2 dm list indicators
+                //return;
                 const comp = findInReactTree(res,m => m.props?.children[0]?.type?.displayName == "View")
                 //window.comp1 = comp.props.children[0]
+                //comp.props.children[0].props.children
+
                 comp.props.children[0].props.children[0] = <View style={{
+                //comp.props.children[0].props.children = <View style={{
                     flexDirection: 'row'
                 }}>
                     {comp.props.children[0].props.children[0]}
@@ -151,24 +158,50 @@ export default {
                 
                 const dmTopBar = res.props?.children
                 if(!findInReactTree(res,m => m.key == "DMTabsV2Header")){
+                    
+                    //console.log("DTB",dmTopBar)
+                    if(dmTopBar.props?.children?.props?.children[1]){
+                        if(typeof dmTopBar.props?.children?.props?.children[1]?.type == "function"){
 
-                    //note to self: don't hardcode asset ids
-                    const arrowId = getAssetIDByName("arrow-right");
-                    const container1 = findInReactTree(dmTopBar, m => m.props?.children[1]?.props?.source == arrowId)
+                            //alert(typeof dmTopBar.props?.children?.props?.children[1]?.type)
+                            const titleThing = dmTopBar.props?.children?.props?.children[1]    
 
-                    container1.props?.children?.push(<View 
-                        key="DMTabsV2Header"    
-                        style={{
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        alignContent: 'flex-start'
-                    }}>
-                        <View 
-                            key="DMTabsV2HeaderIcons"
-                            style={{
-                                flexDirection: 'row'
-                            }}></View>
-                    </View>)
+                            
+                            const unpatchTV2HdrV2 = patcher.after("type",titleThing, (args,res)=>{
+                                //console.log("TITLE",res)
+                                unpatchTV2HdrV2()
+                                if(!findInReactTree(res, (c) => c.key == "DMTabsV2Header-v2")){
+                                    res.props.children[0].props.children.push(
+                                        <PresenceUpdatedContainer key="DMTabsV2Header-v2">
+                                            <StatusIcons userId={userId}/>
+                                        </PresenceUpdatedContainer>
+                                    )
+                                }
+                            })
+                            
+
+
+                        } else {
+
+                            //note to self: don't hardcode asset ids
+                            const arrowId = getAssetIDByName("arrow-right");
+                            const container1 = findInReactTree(dmTopBar, m => m.props?.children[1]?.props?.source == arrowId)
+
+                            container1.props?.children?.push(<View 
+                                key="DMTabsV2Header"    
+                                style={{
+                                flexDirection: 'row',
+                                justifyContent: 'center',
+                                alignContent: 'flex-start'
+                            }}>
+                                <View 
+                                    key="DMTabsV2HeaderIcons"
+                                    style={{
+                                        flexDirection: 'row'
+                                    }}></View>
+                            </View>)
+                        }
+                    }
 
                 }
                 const topIcons = findInReactTree(res,m => m.key == "DMTabsV2HeaderIcons")
