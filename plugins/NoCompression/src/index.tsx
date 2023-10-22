@@ -7,13 +7,11 @@ const GuildStore = findByProps("getGuild");
 const { BoostedGuildFeatures } = findByProps("BoostedGuildFeatures");
 const { getUserMaxFileSize } = findByProps("getUserMaxFileSize");
 
-import { formatBytes } from "./utils";
 import { storage } from "@vendetta/plugin";
 import Settings from "./settings";
+import { showToast } from "@vendetta/ui/toasts";
+import { getAssetIDByName } from "@vendetta/ui/assets";
 
-
-
-let unpatchCompressor;
 
 function getMaxAllowedFileSize(channelId){
 
@@ -28,52 +26,25 @@ function getMaxAllowedFileSize(channelId){
     return userMaxSizeLimit > guildMaxSizeLimit ? userMaxSizeLimit : guildMaxSizeLimit;
 }
 
-function askUserToCompressFile(maxAllowedSize, fileSize){
-    return new Promise((resolve) => {
-        Dialog.show({
-            title: `Compress before upload?`,
-            body: `The size of the file you are trying to upload exceeds the maximum allowed size of ${formatBytes(maxAllowedSize)}. Do you want this file to be compressed?\nThis choice only applies to this file.`,
-            confirmText: "Yes",
-            cancelText: "No",
-            confirmColor: "brand",
-            onConfirm: () => {
-                resolve(true)
-            },
-            onCancel: () => {
-                resolve(false)
-            }
-        });
-    })
-}
-
+let unpatches = [];
 export default {
     onLoad: () => {
-
         storage.compressBig ??= false;
 
         const CloudUpload = findByProps('CloudUpload').CloudUpload;
-        unpatchCompressor = before('reactNativeCompressAndExtractData', CloudUpload.prototype, function(args) {
-
+        unpatches.push(before('reactNativeCompressAndExtractData', CloudUpload.prototype, function(args) {
             let compressionDisabled = true
-            window.rc = this
-            window.rc2 = args
-            
-            
-            const maxSize = getMaxAllowedFileSize(this.channelId);
-            console.log("MAX", maxSize)
-            console.log("FILE", this.preCompressionSize)
 
+            const maxSize = getMaxAllowedFileSize(this.channelId);
             if(this.preCompressionSize > maxSize){
                 if(storage.compressBig){
                     compressionDisabled = false;
+                    showToast("File is too big, compression will be allowed.", getAssetIDByName("ic_message_copy"));
                 }
             }
-
-            console.log("CU_COMP2", this, args)
-
             
             if(compressionDisabled){
-                console.log("WILL NOT COMPRESS")
+                //console.log("WILL NOT COMPRESS")
 
                 //disable compression here
                 this.reactNativeFilePrepped = true;
@@ -88,30 +59,23 @@ export default {
                     this.filename = this.filename + '.jpg'
                 }
             } else {
-                console.log("WILL COMPRESS")
+                
+
             }
-            //orig.apply(this);
-        });
-        //instead("CloudUpload", CloudUploadUtils, function(args,orig){
-        before('handleError', CloudUpload.prototype, function(args) {
-            
-            console.log("CloudUpload2Error", args)
-            window.cu = args
-            window.cu2 = this
-
-        })
-
-        /*instead('upload', CloudUploadUtils.CloudUpload.prototype, function(args, orig) {
-
-            console.log("CloudUpload2", args)
-            window.cu = args
-            window.cu2 = this
-
-            orig.apply(this,args)
-        })*/
+        }));
+        unpatches.push(before('handleError', CloudUpload.prototype, function(args) {
+            if(args[0] == 40005){
+                Dialog.show({
+                    title: `File is too big to upload`,
+                    body: `The size of the file you are trying to upload exceeds the maximum allowed size. You can allow compressing of big files in the plugin settings.`,
+                    confirmText: "Accept",
+                    confirmColor: "brand",
+                })
+            }
+        }));
     },
     onUnload: () => {
-        unpatchCompressor();
+        unpatches.forEach(u => u());
     },
     settings:()=>{
         return <Settings/>
