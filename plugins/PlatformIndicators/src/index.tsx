@@ -27,38 +27,42 @@ export default {
 
         //spagetti code ahead
 
+        //Big view patch
         unpatches.push(patcher.after("render",View,(_,res) => {
-            if(!storage.dmTopBar) return;
+            if(storage.dmTopBar){
 
-            const textChannel = findInReactTree(res, r => r?.props?.children[1]?.type?.name == "ChannelActivity" && r?.props?.children[1]?.props?.hasOwnProperty?.("userId"))
-            if(!textChannel)return;
-            if(textChannel.props?.children?.length != 2) return;
-            if(textChannel.props?.children[0]?.props?.children?.length != 2) return;
-            
-            const target = textChannel.props?.children[0]?.props?.children
-            if(target.filter(m => m?.props?.userId).length == 2){
-                const target2 = target[1]
-                const uid = target2.props?.userId;
-                if(!uid) return;
+                const textChannel = findInReactTree(res, r => r?.props?.children[1]?.type?.name == "ChannelActivity" && r?.props?.children[1]?.props?.hasOwnProperty?.("userId"))
+                if(!textChannel)return;
+                if(textChannel.props?.children?.length != 2) return;
+                if(textChannel.props?.children[0]?.props?.children?.length != 2) return;
+                
+                const target = textChannel.props?.children[0]?.props?.children
+                if(target.filter(m => m?.props?.userId).length == 2){
+                    const target2 = target[1]
+                    const uid = target2.props?.userId;
+                    if(!uid) return;
 
-                patcher.after("type",target2,(args,res) => {
-                    //console.log("SSSSSS",args,res)
-                    if(!findInReactTree(res, m => m.key == "StatusIcons")){
-                        res = <View style={{
-                                display: 'flex',
-                                flexDirection: 'row'
-                            }}>
-                                {res}
-                                <PresenceUpdatedContainer key="StatusIcons">
-                                    <StatusIcons userId={uid}/>
-                                </PresenceUpdatedContainer>
-                            </View>
-                    }
-                    return res
-                })
+                    patcher.after("type",target2,(args,res) => {
+                        //console.log("SSSSSS",args,res)
+                        if(!findInReactTree(res, m => m.key == "StatusIcons")){
+                            res = <View style={{
+                                    display: 'flex',
+                                    flexDirection: 'row'
+                                }}>
+                                    {res}
+                                    <PresenceUpdatedContainer key="StatusIcons">
+                                        <StatusIcons userId={uid}/>
+                                    </PresenceUpdatedContainer>
+                                </View>
+                        }
+                        return res
+                    })
+                }
             }
+
         }))
 
+        //Big pressable patch
         const Pressable = findByDisplayName("Pressable",false); //importing from ReactNative doesn't work
         unpatches.push(patcher.before("render",Pressable.default.type,(args)=>{
             if(!args) return;
@@ -102,13 +106,61 @@ export default {
                 }
             }
 
+            if(props.accessibilityRole == "button"){
+                if(!storage.userList) return;
+                if(props?.children?.props?.children?.props?.children){
+                    if(props?.children?.props?.children?.props?.children[0]?.type?.type?.name == "GuildContainerIndicator"){
+                        //window.row2 = props.children
+                        //console.log("BTN: ",props)
+                        
+                        
+                        //> > row2.props.children.props.children[1].props.children[0].props.children.props.userrow2.props.children.props.children[1].props.children[0].props.children.props.user
 
+                        const userId = props?.children?.props?.children?.props?.children[1]?.props?.children[0]?.props?.children?.props?.user?.id
+
+                        if(props?.children?.props?.children?.props?.children[1]?.props?.children[0]?.props?.children?.props?.guildId) return;
+                        if(userId){
+                        
+                            
+                            //props.children.props.children.props.children[2].props.children[0] = <Text>AAABBBB</Text>
+                            const nameArea = props?.children?.props?.children?.props?.children[2]?.props?.children[0]
+                            //console.log(nameArea)
+                            if(nameArea){
+
+                                //nameArea.props.children[0].props.children.push(<Text>AAABBBB{userId}</Text>)
+
+                                const userName = nameArea.props.children[0].props.children //.push(<Text>AAABBBB</Text>)
+                                
+
+                                //props?.children?.props?.children?.props?.children[1]?.props?.children[1]?.props?.itemKey
+
+                                if(!findInReactTree(userName, (c) => c.key == "DMTabsV2DMList-v2")){
+                                    userName.push(
+                                        <PresenceUpdatedContainer key="DMTabsV2DMList-v2">
+                                            <StatusIcons userId={userId}/>
+                                        </PresenceUpdatedContainer>
+                                    )
+                                }
+                            }
+                        }
+
+
+                    }
+                }
+                
+
+            }
             
         }));
         
 
         const PresenceStore = findByStoreName("PresenceStore");
+
+
+        /*Dead code
         unpatches.push(patcher.after("type",findByProps("DirectMessageRow").DirectMessageRow,(args,res) => {
+            return;
+
             //window.dmr =res
 
             //this shouldn't crash 
@@ -127,6 +179,7 @@ export default {
                 const comp = findInReactTree(res,m => m.props?.children[0]?.type?.displayName == "View")
                 //window.comp1 = comp.props.children[0]
                 //comp.props.children[0].props.children
+                return;
 
                 comp.props.children[0].props.children[0] = <View style={{
                 //comp.props.children[0].props.children = <View style={{
@@ -142,7 +195,7 @@ export default {
                     
                 </View>
             })
-        }));
+        }));*/
 
         //tabs v2 dm header
         unpatches.push(patcher.after("default",findByName("ChannelHeader",false),(args,res) => {
@@ -253,6 +306,11 @@ export default {
             const statusIconsView = findInReactTree(res, (c) => c.key == "GuildMemberRowStatusIconsView");
             if(!statusIconsView){
                 const row = findInReactTree(res, (c) => c.props.style.flexDirection === "row")
+                /*if(row.props?.children){
+                    console.log(row.props?.children[1])
+                }*/
+                //row.props.children.splice(2, 0,
+                //row.props.children.push(
                 row.props.children.splice(2, 0,
                     <View 
                         key="GuildMemberRowStatusIconsView"
@@ -272,7 +330,8 @@ export default {
             if(!statusIconsView){
                 const row = findInReactTree(res.props.label, (c) => c.props?.lineClamp).props.children
                 if(row?.props?.children){
-                    row.props.children[1] = (
+                    //console.log("TV2ROW",row.props.children)
+                    /*let element = (
                         <View key="TabsV2MemberListStatusIconsView">
                             <Text> </Text>
                             <View style={{
@@ -280,13 +339,35 @@ export default {
                             }}>
                                 <StatusIcons userId={user.id}/>
                             </View>
-                        </View>
-                    )
+                        </View>);*/
+                    let element = (
+                        <View key="TabsV2MemberListStatusIconsView" style={{
+                                    flexDirection: 'row'
+                                }}>
+                                    <StatusIcons userId={user.id}/>
+                                </View>);
+                        
+                    
+                    let index = 1;
+
+
+                    //if(row.props.children[1]?.props?.children[1]?.type?.name == "BotTag"){
+                    //    row.props.children[1].props.children.splice(2,0 ,element)
+                    //}else {
+                        row.props.children[1]=element
+                    //}
                 }
             }
         }
 
         findByTypeNameAll("UserRow").forEach((UserRow) => unpatches.push(patcher.after("type", UserRow, rowPatch)))
+
+
+        /* Saving for later
+        unpatches.push(patcher.before("PureComponentWrapper", findByProps("PureComponentWrapper"), (args, res) => {
+            //console.log("PureComponentWrapper")
+        }))*/
+
 
 
         },
