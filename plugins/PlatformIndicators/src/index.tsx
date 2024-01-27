@@ -29,6 +29,16 @@ export default {
 
         //Big view patch
         unpatches.push(patcher.after("render",View,(_,res) => {
+
+            /*if(res.props?.collapsable == false || res.props?.collapsable){
+                //if(res.props?.hasOwnProperty("hitSlop")){
+                    res.props.style = {
+                        background: "#ff0000"
+                    }
+                    console.log("colapsable",res)
+                //}
+            }*/
+
             if(storage.dmTopBar){
 
                 const textChannel = findInReactTree(res, r => r?.props?.children[1]?.type?.name == "ChannelActivity" && r?.props?.children[1]?.props?.hasOwnProperty?.("userId"))
@@ -106,10 +116,19 @@ export default {
                 }
             }
 
+            //DM list on tabs v2
+            //kinda broken ik
             if(props.accessibilityRole == "button"){
                 if(!storage.userList) return;
+
+                //diggy diggy hole
                 if(props?.children?.props?.children?.props?.children){
+                    //console.log("diggy", props?.children?.props?.children?.props?.children[0]?.type?.type?.name)
+                    //if(props?.children?.props?.children?.props?.children[0]?.type?.type?.name == "GuildContainerIndicator" || props?.children?.props?.children?.props?.children[0]?.type?.type?.name == "ChannelUnreadBadge"){
                     if(props?.children?.props?.children?.props?.children[0]?.type?.type?.name == "GuildContainerIndicator"){
+                        
+                        //if(!findInReactTree(props.children, m => m?.source?.uri?.contains?.("/avatars"))) return;
+                        //if(!findInReactTree(props.children, m => m?.props?.source?.uri)) return;
                         //window.row2 = props.children
                         //console.log("BTN: ",props)
                         
@@ -323,41 +342,49 @@ export default {
             }
         }))
 
+        // user list on tabs v2
         const rowPatch = ([{ user }], res) => {
             if(!storage.userList) return;
-            if(storage.oldUserListIcons) return;
-            const statusIconsView = findInReactTree(res, (c) => c.key == "TabsV2MemberListStatusIconsView");
-            if(!statusIconsView){
-                const row = findInReactTree(res.props.label, (c) => c.props?.lineClamp).props.children
-                if(row?.props?.children){
-                    //console.log("TV2ROW",row.props.children)
-                    /*let element = (
-                        <View key="TabsV2MemberListStatusIconsView">
-                            <Text> </Text>
-                            <View style={{
-                                flexDirection: 'row'
-                            }}>
-                                <StatusIcons userId={user.id}/>
-                            </View>
-                        </View>);*/
-                    let element = (
+            
+
+
+            //const row2 = findInReactTree(res.props.label, (c) => c.props?.lineClamp).props.children
+            window.row2 = res
+
+            /*const row2 = findInReactTree(res.props.label, (c) => c.props?.lineClamp)
+            console.log("r2propschild:",row2.props.children)
+            row2.props.children = (
+                <View style={{
+                    flex:1,
+                    justifyContent: "space-between"
+                }}>
+                    <Text>UwU</Text>
+                    {row2.props.children.props.children}
+                </View>
+
+            )*/
+
+
+            const modifiedStatusIcons = findInReactTree(res, (c) => c.key == "TabsV2MemberListStatusIconsView");
+            if(!modifiedStatusIcons){
+                res.props.label = (
+                    <View style={{
+                        flex:1,
+                        justifyContent: storage.oldUserListIcons ? "space-between": "flex-start",
+                        flexDirection: "row"
+                    }}
+                    key="TabsV2MemberListStatusIconsView">
+                        {res.props.label}
                         <View key="TabsV2MemberListStatusIconsView" style={{
-                                    flexDirection: 'row'
-                                }}>
-                                    <StatusIcons userId={user.id}/>
-                                </View>);
-                        
-                    
-                    let index = 1;
-
-
-                    //if(row.props.children[1]?.props?.children[1]?.type?.name == "BotTag"){
-                    //    row.props.children[1].props.children.splice(2,0 ,element)
-                    //}else {
-                        row.props.children[1]=element
-                    //}
-                }
+                            flexDirection: 'row'
+                        }}>
+                            <StatusIcons userId={user.id}/>
+                        </View>
+                    </View>
+                )
             }
+
+            
         }
 
         findByTypeNameAll("UserRow").forEach((UserRow) => unpatches.push(patcher.after("type", UserRow, rowPatch)))

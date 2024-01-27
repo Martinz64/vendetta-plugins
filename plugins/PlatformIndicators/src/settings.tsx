@@ -45,7 +45,7 @@ export default function Settings() {
                     label="Old user list icon style"
                     value={storage.oldUserListIcons ?? false}
                     onValueChange={v => storage.oldUserListIcons = v}
-                    note=""
+                    note="Moves status indicators to the right"
                 />
             </View>
         </ScrollView>
