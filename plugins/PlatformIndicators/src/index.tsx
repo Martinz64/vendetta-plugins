@@ -1,5 +1,5 @@
 import { patcher } from "@vendetta";
-import { findByDisplayName, findByName, findByProps, findByStoreName, findByTypeNameAll } from "@vendetta/metro";
+import { findByDisplayName, findByName, findByProps, findByPropsAll, findByStoreName, findByTypeNameAll } from "@vendetta/metro";
 import {General} from "@vendetta/ui/components"
 import { findInReactTree } from "@vendetta/utils";
 import StatusIcons from "./StatusIcons";
@@ -30,7 +30,22 @@ export default {
         //Big view patch
         unpatches.push(patcher.after("render",View,(_,res) => {
 
-            /*if(res.props?.collapsable == false || res.props?.collapsable){
+
+
+
+            /*if(res?.props?.children?.props?.children){
+                if(res?.props?.children?.props?.children[1]?.type?.type?.name == "ChannelUnreadBadge"){
+                    //if(res.props?.hasOwnProperty("hitSlop")){
+                        res.props.style = {
+                            background: "#ff0000"
+                        }
+                        console.log("colapsable",res)
+                    //}
+                }
+            }*/
+
+            /*console.log(res)
+            if(res?.props?.accessibilityLabel == 'Main (mensaje directo)'){
                 //if(res.props?.hasOwnProperty("hitSlop")){
                     res.props.style = {
                         background: "#ff0000"
@@ -38,6 +53,7 @@ export default {
                     console.log("colapsable",res)
                 //}
             }*/
+
 
             if(storage.dmTopBar){
 
@@ -72,6 +88,8 @@ export default {
 
         }))
 
+
+
         //Big pressable patch
         const Pressable = findByDisplayName("Pressable",false); //importing from ReactNative doesn't work
         unpatches.push(patcher.before("render",Pressable.default.type,(args)=>{
@@ -79,7 +97,52 @@ export default {
             if(!args[0]) return;
             const [ props ] = args;
             if(!props) return;
+
+
+            // tabs v2 DM list (current)
+            if(storage.userList){
+                if(props?.children?.props?.children?.props?.children){ 
+                    if(props.children.props.children.props.children[1]?.type?.type?.name == "ChannelUnreadBadge"){
+                    //if(findInReactTree(props, m => m?.type?.type?.name == "ChannelUnreadBadge")){
+                        //window.prv1 = args
+                        const targetCard = props.children.props.children
+                        const userDataElement = findInReactTree(targetCard, m => m?.user)
+                        if(userDataElement?.user){
+                            //console.log("UDE",userDataElement)
+                            if(!findInReactTree(props, m => m?.key == "TabsV2-DM-List")){
+                                //const userHeader = findInReactTree(props, m => (m?.props?.children == username && m?.props?.variant == "text-md/semibold"))
+                                const userHeader = findInReactTree(props, m => (m?.props?.variant == "text-md/semibold" || m?.props?.variant == "redesign/channel-title/semibold"))
+                                if(userHeader){
+                                    userHeader.props.children = [
+                                        userHeader.props.children, 
+                                        <View 
+                                            key="TabsV2-DM-List"
+                                            style={{
+                                                flexDirection: 'row',
+                                                justifyContent: 'center',
+                                                alignContent: 'flex-start'
+                                        }}>
+                                            <PresenceUpdatedContainer>
+                                                <StatusIcons userId={userDataElement.user.id}/>
+                                            </PresenceUpdatedContainer>
+                                        </View>
+                                    ]
+                                }
+                            }
+                        }
+                        
+                        /*props.children.props.children.props.children[3].props.children[0].props.children[0].props.children = [
+                            props.children.props.children.props.children[3].props.children[0].props.children[0].props.children,
+                            <View><Text>User</Text></View>
+                        ]*/
+                        //props.children.props.children.props.children[3].props.children[1].props.children = <View><Text>User</Text></View>
+                        //props.children = <View><Text>Pressabletest</Text></View>
+                    }
+                }
+            }
+            
             //user list in non tabs v2
+            //might remove later
             if(props.accessibilityRole == "button"){
                 if(!storage.userList) return;
                 if(props.children){
@@ -139,20 +202,13 @@ export default {
 
                         if(props?.children?.props?.children?.props?.children[1]?.props?.children[0]?.props?.children?.props?.guildId) return;
                         if(userId){
-                        
-                            
                             //props.children.props.children.props.children[2].props.children[0] = <Text>AAABBBB</Text>
                             const nameArea = props?.children?.props?.children?.props?.children[2]?.props?.children[0]
                             //console.log(nameArea)
                             if(nameArea){
-
                                 //nameArea.props.children[0].props.children.push(<Text>AAABBBB{userId}</Text>)
-
                                 const userName = nameArea.props.children[0].props.children //.push(<Text>AAABBBB</Text>)
-                                
-
                                 //props?.children?.props?.children?.props?.children[1]?.props?.children[1]?.props?.itemKey
-
                                 if(!findInReactTree(userName, (c) => c.key == "DMTabsV2DMList-v2")){
                                     userName.push(
                                         <PresenceUpdatedContainer key="DMTabsV2DMList-v2">
@@ -162,59 +218,15 @@ export default {
                                 }
                             }
                         }
-
-
                     }
                 }
                 
-
             }
             
         }));
         
 
         const PresenceStore = findByStoreName("PresenceStore");
-
-
-        /*Dead code
-        unpatches.push(patcher.after("type",findByProps("DirectMessageRow").DirectMessageRow,(args,res) => {
-            return;
-
-            //window.dmr =res
-
-            //this shouldn't crash 
-            if(!res.props?.user) return;
-            const userId = res.props?.user?.id
-
-            if(!userId) return;
-
-
-
-
-            patcher.after("type",res,(args,res) => {
-                //console.log("DMR",res)
-                //tabs v2 dm list indicators
-                //return;
-                const comp = findInReactTree(res,m => m.props?.children[0]?.type?.displayName == "View")
-                //window.comp1 = comp.props.children[0]
-                //comp.props.children[0].props.children
-                return;
-
-                comp.props.children[0].props.children[0] = <View style={{
-                //comp.props.children[0].props.children = <View style={{
-                    flexDirection: 'row'
-                }}>
-                    {comp.props.children[0].props.children[0]}
-                    <View style={{
-                        marginLeft: 2,
-                        flexDirection: 'row'
-                    }}>
-                        <StatusIcons userId={userId}/>
-                    </View>
-                    
-                </View>
-            })
-        }));*/
 
         //tabs v2 dm header
         unpatches.push(patcher.after("default",findByName("ChannelHeader",false),(args,res) => {
@@ -318,29 +330,25 @@ export default {
         //
         //next 2 patches taken from here: https://github.com/Fierdetta/staff-tags/
         const Rows = findByProps("GuildMemberRow")
-        unpatches.push(patcher.after("type", Rows.GuildMemberRow, ([{ user }], res) => {
-            if(!storage.userList) return;
-            if(storage.oldUserListIcons) return;
-
-            const statusIconsView = findInReactTree(res, (c) => c.key == "GuildMemberRowStatusIconsView");
-            if(!statusIconsView){
-                const row = findInReactTree(res, (c) => c.props.style.flexDirection === "row")
-                /*if(row.props?.children){
-                    console.log(row.props?.children[1])
-                }*/
-                //row.props.children.splice(2, 0,
-                //row.props.children.push(
-                row.props.children.splice(2, 0,
-                    <View 
-                        key="GuildMemberRowStatusIconsView"
-                        style={{
-                            flexDirection: 'row'
-                    }}>
-                        <StatusIcons userId={user.id}/>
-                    </View>
-                )
-            }
-        }))
+        if(Rows?.GuildMemberRow){
+            unpatches.push(patcher.after("type", Rows.GuildMemberRow, ([{ user }], res) => {
+                if(!storage.userList) return;
+                if(storage.oldUserListIcons) return;
+                const statusIconsView = findInReactTree(res, (c) => c.key == "GuildMemberRowStatusIconsView");
+                if(!statusIconsView){
+                    const row = findInReactTree(res, (c) => c.props.style.flexDirection === "row")
+                    row.props.children.splice(2, 0,
+                        <View 
+                            key="GuildMemberRowStatusIconsView"
+                            style={{
+                                flexDirection: 'row'
+                        }}>
+                            <StatusIcons userId={user.id}/>
+                        </View>
+                    )
+                }
+            }))
+        }
 
         // user list on tabs v2
         const rowPatch = ([{ user }], res) => {
@@ -390,10 +398,114 @@ export default {
         findByTypeNameAll("UserRow").forEach((UserRow) => unpatches.push(patcher.after("type", UserRow, rowPatch)))
 
 
-        /* Saving for later
-        unpatches.push(patcher.before("PureComponentWrapper", findByProps("PureComponentWrapper"), (args, res) => {
-            //console.log("PureComponentWrapper")
+
+
+
+
+        //Saving for later (tests)
+        /*unpatches.push(patcher.before("PureComponentWrapper", findByProps("PureComponentWrapper"), (args) => {
+            console.log("PureComponentWrapper")
+            window.pcw = args
+
+            args[0].renderer = (a) => {
+                return <View><Text>PureComponentWrapper</Text></View>
+            }
         }))*/
+        
+        /*
+        unpatches.push(patcher.after("PureComponentWrapper", findByProps("PureComponentWrapper"), (args,res) => {
+            console.log("PureComponentWrapper")
+            window.pcw = res
+
+
+            patcher.after("renderer", res.props, (args,res) => {
+                console.log("RENDERER")
+                window.renderer1 = res
+                res.props.children = [<View><Text>renderer1</Text></View>,res.props.children]
+            })
+
+        
+        }))*/
+
+        /*unpatches.push(patcher.before("render", findByProps("PureComponentWrapper").PureComponentWrapper.prototype, (args) => {
+            console.log("PureComponentWrapper.render")
+            window.pcwr = args
+            return <View>
+                <Text>AABBBB</Text>
+            </View>
+        }))*/
+
+
+        /*unpatches.push(patcher.before("constructor", findByProps("PureComponentWrapper").PureComponentWrapper.prototype, (args) => {
+            console.log("PureComponentWrapper.render")
+            window.pcwrc = args
+        }))*/
+
+
+        /*findByPropsAll("CellContainer").forEach((CellContainer) => unpatches.push(patcher.before("CellContainer", CellContainer, (args) => {
+            console.log("CellContainer")
+            window.cc1 = args
+
+        })))*/
+
+        /*unpatches.push(patcher.before("CellContainer", findByProps("CellContainer"), (args) => {
+            console.log("CellContainer")
+            window.cc1 = args
+        }))*/
+
+        /*const ViewRenderer = findByName("ViewRenderer",false)
+        unpatches.push(patcher.before("default", ViewRenderer, (args) => {
+            //return;
+
+            window.vrrargs = args
+
+            args[0].childRenderer = (a,b,c,d) => {
+                return <View><Text>childRenderer</Text></View>
+            }
+
+            return;
+
+            const origrender = args[0].renderItemContainer
+            args[0].renderItemContainer = (a,b) => {
+                //console.log("render",a,b)
+                let retval = origrender(a,b)
+                //console.log("render-ret", retval)
+                window.vrrargs2 = retval
+                //retval.props.children = <View><Text>UWU</Text></View>
+
+                if(retval?.props?.children?.props?.renderer){
+                    retval.props.children.props.renderer = (a) => {
+                        return <View><Text>UWU</Text></View>
+                    }
+                }
+
+
+                return retval
+            }
+
+
+
+            const itemlayout = args[0].onItemLayout
+            args[0].onItemLayout = (a,b) => {
+                //console.log("render",a,b)
+                let retval = itemlayout(a,b)
+                //console.log("render-ret", retval)
+                window.vrrargs3 = retval
+                //retval.props.children = <View><Text>UWU</Text></View>
+
+
+                return retval
+            }
+        }))
+        unpatches.push(patcher.after("default", ViewRenderer, (args, res) => {
+            console.log("VRRR")
+            window.viewrender = res
+        }))*/
+
+
+
+
+
 
 
 
