@@ -47,6 +47,12 @@ export default function Settings() {
                     onValueChange={v => storage.oldUserListIcons = v}
                     note="Moves status indicators to the right"
                 />
+                <Forms.FormSwitchRow
+                    label="Icon theming compatibility"
+                    value={storage.useNativeIcons ?? true}
+                    onValueChange={v => storage.useNativeIcons = v}
+                    note="Use native icons to allow icon theming"
+                />
             </View>
         </ScrollView>
     );
