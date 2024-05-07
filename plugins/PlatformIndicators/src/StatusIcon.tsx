@@ -33,7 +33,10 @@ export default function StatusIcon(props) {
 
     useProxy(storage)
 
-    const useNative = storage.useNativeIcons ?? true
+    //const useNative = storage.useNativeIcons ?? true
+
+    //hotfix for crashes
+    const useNative = false //storage.useNativeIcons ?? true
 
     return (
         <View>
