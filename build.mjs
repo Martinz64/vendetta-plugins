@@ -12,7 +12,9 @@ const extensions = [".js", ".jsx", ".mjs", ".ts", ".tsx", ".cts", ".mts"];
 
 /** @type import("rollup").InputPluginOption */
 const plugins = [
-    nodeResolve(),
+    nodeResolve({
+        resolveOnly: (id) => !["react", "react-native"].includes(id)
+    }),
     commonjs(),
     {
         name: "swc",
