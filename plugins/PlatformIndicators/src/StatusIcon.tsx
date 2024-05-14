@@ -17,7 +17,8 @@ const IconPaths = {
 const IconIDs = {
     desktop: getAssetIDByName("ic_monitor_24px"),
     web: getAssetIDByName("ic_globe_24px"),
-    mobile: getAssetIDByName("ic_mobile_status"),
+    //mobile: getAssetIDByName("ic_mobile_status"),
+    mobile: getAssetIDByName("ic_mobile_device"),
     embedded: getAssetIDByName("ic_monitor_24px"), //provisional
 };
 
