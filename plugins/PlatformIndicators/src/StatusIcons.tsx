@@ -72,7 +72,7 @@ export default function StatusIcons(props) {
     return (
         <>
             {Object.keys(statuses ?? {}).map((s) => 
-            <StatusIcon platform={s} color={getStatusColor(statuses[s],storage.fallbackColors)}/>)}
+            <StatusIcon platform={s} color={getStatusColor(statuses[s],storage.fallbackColors)} useNative={storage.useNativeIcons}/>)}
         </>
     )
 }

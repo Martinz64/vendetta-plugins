@@ -4,9 +4,6 @@ import { getAssetIDByName } from '@vendetta/ui/assets';
 
 const {View,Text,Image,Pressable} = ReactNative;
 
-import { storage } from "@vendetta/plugin";
-import { useProxy } from "@vendetta/storage";
-
 const Svg = findByName("Svg",false).default;
 const Path = findByName("Svg",false).Path;
 
@@ -29,14 +26,14 @@ const IconIDs = {
 
 
 export default function StatusIcon(props) {
-    const { platform, color } = props;
+    const { platform, color, useNative } = props;
 
-    useProxy(storage)
+    //useProxy(storage)
 
     //const useNative = storage.useNativeIcons ?? true
 
     //hotfix for crashes
-    const useNative = false //storage.useNativeIcons ?? true
+    //const useNative = false //storage.useNativeIcons ?? true
 
     return (
         <View>
