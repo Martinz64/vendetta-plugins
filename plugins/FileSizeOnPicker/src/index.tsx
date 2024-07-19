@@ -31,7 +31,8 @@ export default {
             sizeText: {
                 includeFontPadding: false,
                 fontSize: 12,
-                color: semanticColors.TEXT_NORMAL,
+                //color: semanticColors.TEXT_NORMAL,
+                color: "white",
                 fontFamily: Constants.Fonts.PRIMARY_BOLD,
             }
         });
