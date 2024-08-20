@@ -1,5 +1,5 @@
 import { patcher } from "@vendetta";
-import { findByDisplayName, findByName, findByProps, findByPropsAll, findByStoreName, findByTypeNameAll } from "@vendetta/metro";
+import { findByDisplayName, findByName, findByProps, findByPropsAll, findByStoreName, findByTypeNameAll, findByTypeName } from "@vendetta/metro";
 import {General} from "@vendetta/ui/components"
 import { findInReactTree } from "@vendetta/utils";
 import StatusIcons from "./StatusIcons";
@@ -351,6 +351,7 @@ export default {
             }))
         }
 
+        let patchedAvatar = false
         // user list on tabs v2
         const rowPatch = ([{ user }], res) => {
             if(!storage.userList) return;
@@ -358,7 +359,7 @@ export default {
 
 
             //const row2 = findInReactTree(res.props.label, (c) => c.props?.lineClamp).props.children
-            window.row2 = res
+            //window.row2 = res
 
             /*const row2 = findInReactTree(res.props.label, (c) => c.props?.lineClamp)
             console.log("r2propschild:",row2.props.children)
@@ -374,8 +375,9 @@ export default {
             )*/
 
 
-            const modifiedStatusIcons = findInReactTree(res, (c) => c.key == "TabsV2MemberListStatusIconsView");
+            const modifiedStatusIcons = findInReactTree(res?.props?.label, (c) => c.key == "TabsV2MemberListStatusIconsView");
             if(!modifiedStatusIcons){
+                //window.mst = res
                 res.props.label = (
                     <View style={{
                         flex:1,
@@ -391,6 +393,17 @@ export default {
                         </View>
                     </View>
                 )
+
+                if(!patchedAvatar){
+                    unpatches.push(patcher.before("type", res.props.icon.type, (args)=>{
+                        //console.log("AVATAR", args,res)
+                        //window.av = args
+                        if(storage.removeDefaultMobile){
+                            args[0].isMobileOnline = false
+                        }
+                    }))
+                    patchedAvatar = true
+                }
             }
 
             
@@ -398,6 +411,68 @@ export default {
 
         findByTypeNameAll("UserRow").forEach((UserRow) => unpatches.push(patcher.after("type", UserRow, rowPatch)))
 
+
+
+
+
+
+
+
+        const MessagesItemChannelContent = findByTypeName("MessagesItemChannelContent")
+        unpatches.push(patcher.after("type", MessagesItemChannelContent, (args, res) => {
+            console.log("MessagesItemChannelContent-B", args, res)
+
+            
+            //window.dml2 = res
+            //window.dmla2 = args
+
+            //const messageContainer = findInReactTree(res, m => m?.props?.channel)
+
+            //const channel = messageContainer?.props?.channel
+            const channel = args[0]?.channel
+
+            if(channel?.recipients?.length == 1){
+                const userId = channel.recipients[0]
+
+                const textContainer = findInReactTree(res, m => m.props.children[0].props.variant =="redesign/channel-title/semibold")
+
+                //textContainer.props.children.push(<View><Text>{userId}</Text></View>)
+
+                textContainer.props.children.push(<View key="TabsV2RedesignDMListIcons" style={{
+                    flexDirection: 'row'
+                }}>
+                    <StatusIcons userId={userId}/>
+                </View>)
+
+                //res.props.children[0].props.children.push(<View><Text>{userId}</Text></View>)
+            }
+
+            //const userId = messageContainer?.props?.message?.author?.id
+            //const userId = messageContainer?.props?.channel?.ownerId
+            
+        }))
+
+        /*const MessagesItemChannel = findByTypeName("MessagesItemChannel")
+        unpatches.push(patcher.after("type", MessagesItemChannel, (args, res) => {
+            console.log("MessagesItemChannel-B", args, res)
+
+            
+            window.dml2 = res
+            window.dmla2 = args
+
+            /*const messageContainer = findInReactTree(res, m => m?.props?.channel)
+
+            const channel = messageContainer?.props?.channel
+
+            if(channel?.recipients?.length == 1){
+                const userId = channel.recipients[0]
+                res.props.children[0].props.children.push(<View><Text>{userId}</Text></View>)
+            }
+
+            //const userId = messageContainer?.props?.message?.author?.id
+            //const userId = messageContainer?.props?.channel?.ownerId
+            
+        }))*/
 
 
 
