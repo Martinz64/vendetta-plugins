@@ -16,7 +16,7 @@ export function SizeTag(props) {
     React.useEffect(() => {
         async function fetchData() {
             if(!sizeCache[url]){
-                const FileManager = NativeModules.DCDFileManager ?? NativeModules.RTNFileManager
+                const FileManager = NativeModules.NativeFileModule ?? NativeModules.RTNFileManager ?? NativeModules.DCDFileManager
                 FileManager.getSize(url).then(size => {
                     setSize(formatBytes(size));
                     setLoading(false);
