@@ -49,16 +49,11 @@ const themableIcons = {
 
 
 export default function StatusIcon(props) {
-    const { platform, color, useNative } = props;
+    const { platform, color } = props;
 
     const iconSize = props.iconSize ?? 16;
 
     //useProxy(storage)
-
-    //const useNative = storage.useNativeIcons ?? true
-
-    //hotfix for crashes
-    //const useNative = false //storage.useNativeIcons ?? true
 
     return (
         <View>
@@ -81,33 +76,4 @@ export default function StatusIcon(props) {
             
         </View>
     )
-
-
-    /*return (
-        <View>
-
-            { useNative ? 
-                <Image
-                    style={{
-                        height: 16,
-                        width: 16,
-                        tintColor: color
-                    }}
-                    source={IconIDs[platform]}
-                />
-            :
-                <Svg
-                    height="16"
-                    width="16"
-                    viewBox="0 0 24 24"
-                    fill={color}
-                >
-                    <Path d={IconPaths[platform]} />
-                </Svg>
-            }
-            
-
-            
-        </View>
-    )*/
 }

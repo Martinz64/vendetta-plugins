@@ -24,7 +24,6 @@ export default {
         storage.removeDefaultMobile ??= true
         storage.fallbackColors ??= false
         storage.oldUserListIcons ??= false
-        storage.useNativeIcons ??= true
 
         //spagetti code ahead
 
