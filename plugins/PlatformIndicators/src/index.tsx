@@ -24,37 +24,14 @@ export default {
         storage.removeDefaultMobile ??= true
         storage.fallbackColors ??= false
         storage.oldUserListIcons ??= false
+        const debugLabels = false
 
         //spagetti code ahead
+        //i'm sorry for whoever has to interpret this
 
         //Big view patch
         unpatches.push(patcher.after("render",View,(_,res) => {
-
-
-
-
-            /*if(res?.props?.children?.props?.children){
-                if(res?.props?.children?.props?.children[1]?.type?.type?.name == "ChannelUnreadBadge"){
-                    //if(res.props?.hasOwnProperty("hitSlop")){
-                        res.props.style = {
-                            background: "#ff0000"
-                        }
-                        console.log("colapsable",res)
-                    //}
-                }
-            }*/
-
-            /*console.log(res)
-            if(res?.props?.accessibilityLabel == 'Main (mensaje directo)'){
-                //if(res.props?.hasOwnProperty("hitSlop")){
-                    res.props.style = {
-                        background: "#ff0000"
-                    }
-                    console.log("colapsable",res)
-                //}
-            }*/
-
-
+            return;
             if(storage.dmTopBar){
 
                 const textChannel = findInReactTree(res, r => r?.props?.children[1]?.type?.name == "ChannelActivity" && r?.props?.children[1]?.props?.hasOwnProperty?.("userId"))
@@ -67,7 +44,6 @@ export default {
                     const target2 = target[1]
                     const uid = target2.props?.userId;
                     if(!uid) return;
-
                     patcher.after("type",target2,(args,res) => {
                         //console.log("SSSSSS",args,res)
                         if(!findInReactTree(res, m => m.key == "StatusIcons")){
@@ -77,7 +53,7 @@ export default {
                                 }}>
                                     {res}
                                     <PresenceUpdatedContainer key="StatusIcons">
-                                        <StatusIcons userId={uid}/>
+                                        {debugLabels ? <Text>DTB1</Text> : <StatusIcons userId={uid}/>}
                                     </PresenceUpdatedContainer>
                                 </View>
                         }
@@ -85,7 +61,6 @@ export default {
                     })
                 }
             }
-
         }))
 
 
@@ -123,27 +98,20 @@ export default {
                                                 alignContent: 'flex-start'
                                         }}>
                                             <PresenceUpdatedContainer>
-                                                <StatusIcons userId={userDataElement.user.id}/>
+                                                {debugLabels ? <Text>T2-DL-1</Text> : <StatusIcons userId={userDataElement.user.id}/>}
                                             </PresenceUpdatedContainer>
                                         </View>
                                     ]
                                 }
                             }
                         }
-                        
-                        /*props.children.props.children.props.children[3].props.children[0].props.children[0].props.children = [
-                            props.children.props.children.props.children[3].props.children[0].props.children[0].props.children,
-                            <View><Text>User</Text></View>
-                        ]*/
-                        //props.children.props.children.props.children[3].props.children[1].props.children = <View><Text>User</Text></View>
-                        //props.children = <View><Text>Pressabletest</Text></View>
                     }
                 }
             }
             
             //user list in non tabs v2
             //might remove later
-            if(props.accessibilityRole == "button"){
+            /*if(props.accessibilityRole == "button"){
                 if(!storage.userList) return;
                 if(props.children){
                     if(props.children.length >= 2){
@@ -177,7 +145,7 @@ export default {
                         }
                     }
                 }
-            }
+            }*/
 
             //DM list on tabs v2
             //kinda broken ik
@@ -212,7 +180,7 @@ export default {
                                 if(!findInReactTree(userName, (c) => c.key == "DMTabsV2DMList-v2")){
                                     userName.push(
                                         <PresenceUpdatedContainer key="DMTabsV2DMList-v2">
-                                            <StatusIcons userId={userId}/>
+                                            {debugLabels ? <Text>DTV2DL-v2</Text> : <StatusIcons userId={userId}/>}
                                         </PresenceUpdatedContainer>
                                     )
                                 }
@@ -257,7 +225,7 @@ export default {
                                 if(!findInReactTree(res, (c) => c.key == "DMTabsV2Header-v2")){
                                     res.props.children[0].props.children.push(
                                         <PresenceUpdatedContainer key="DMTabsV2Header-v2">
-                                            <StatusIcons userId={userId}/>
+                                            {debugLabels ? <Text>DTV2H-v2</Text> : <StatusIcons userId={userId}/>}
                                         </PresenceUpdatedContainer>
                                     )
                                 }
@@ -299,6 +267,7 @@ export default {
 
         //icons on profile
         //might explode in a future update
+        //it in fact exploded lmao, saving for later
         const DefaultName = findByName("DefaultName", false);
         unpatches.push(patcher.after("default", DefaultName, (args, res) => {
             const user = args[0]?.user;
@@ -327,7 +296,7 @@ export default {
             args[0].isMobileOnline = false
         }))
 
-        //
+        //might remove in the future, seems outdated
         //next 2 patches taken from here: https://github.com/Fierdetta/staff-tags/
         const Rows = findByProps("GuildMemberRow")
         if(Rows?.GuildMemberRow){
@@ -343,7 +312,7 @@ export default {
                             style={{
                                 flexDirection: 'row'
                         }}>
-                            <StatusIcons userId={user.id}/>
+                            {debugLabels ? <Text>GMRSIV</Text> : <StatusIcons userId={user.id}/>}
                         </View>
                     )
                 }
@@ -355,25 +324,6 @@ export default {
         const rowPatch = ([{ user }], res) => {
             if(!storage.userList) return;
             
-
-
-            //const row2 = findInReactTree(res.props.label, (c) => c.props?.lineClamp).props.children
-            //window.row2 = res
-
-            /*const row2 = findInReactTree(res.props.label, (c) => c.props?.lineClamp)
-            console.log("r2propschild:",row2.props.children)
-            row2.props.children = (
-                <View style={{
-                    flex:1,
-                    justifyContent: "space-between"
-                }}>
-                    <Text>UwU</Text>
-                    {row2.props.children.props.children}
-                </View>
-
-            )*/
-
-
             const modifiedStatusIcons = findInReactTree(res?.props?.label, (c) => c.key == "TabsV2MemberListStatusIconsView");
             if(!modifiedStatusIcons){
                 //window.mst = res
@@ -389,13 +339,11 @@ export default {
                         <View key="TabsV2MemberListStatusIconsView" style={{
                             flexDirection: 'row'
                         }}>
-                            <StatusIcons userId={user.id}/>
-                            
+                            {debugLabels ? <Text>TV2MLSIV</Text> : <StatusIcons userId={user.id}/>}
                         </View>
                     </View>
                 )
-                window.iv2 = res.props.label
-
+                //window.iv2 = res.props.label
                 if(!patchedAvatar){
                     unpatches.push(patcher.before("type", res.props.icon.type, (args)=>{
                         //console.log("AVATAR", args,res)
@@ -419,49 +367,33 @@ export default {
 
 
 
-
+        //Newest dm list patch (it's shit)
+        //Requires forcing a re-render of the whole list manually
         const MessagesItemChannelContent = findByTypeName("MessagesItemChannelContent")
         unpatches.push(patcher.after("type", MessagesItemChannelContent, (args, res) => {
-            console.log("MessagesItemChannelContent-B", args, res)
-
-            
-            //window.dml2 = res
-            //window.dmla2 = args
-
-            //const messageContainer = findInReactTree(res, m => m?.props?.channel)
-
-            //const channel = messageContainer?.props?.channel
+            //console.log("MessagesItemChannelContent-B", args, res)
             const channel = args[0]?.channel
-
             if(channel?.recipients?.length == 1){
                 const userId = channel.recipients[0]
-
                 const textContainer = findInReactTree(res, m => m.props.children[0].props.variant =="redesign/channel-title/semibold")
-
                 //textContainer.props.children.push(<View><Text>{userId}</Text></View>)
-
                 textContainer.props.children.push(<View key="TabsV2RedesignDMListIcons" style={{
                     flexDirection: 'row'
                 }}>
-                    <StatusIcons userId={userId}/>
+                    {debugLabels ? <Text>TV2RDMLI</Text> : <StatusIcons userId={userId}/>}
                 </View>)
-
                 //res.props.children[0].props.children.push(<View><Text>{userId}</Text></View>)
             }
-
             //const userId = messageContainer?.props?.message?.author?.id
             //const userId = messageContainer?.props?.channel?.ownerId
             
         }))
-
         /*const MessagesItemChannel = findByTypeName("MessagesItemChannel")
         unpatches.push(patcher.after("type", MessagesItemChannel, (args, res) => {
             console.log("MessagesItemChannel-B", args, res)
-
             
             window.dml2 = res
             window.dmla2 = args
-
             /*const messageContainer = findInReactTree(res, m => m?.props?.channel)
 
             const channel = messageContainer?.props?.channel
