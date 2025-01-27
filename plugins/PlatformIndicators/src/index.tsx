@@ -380,9 +380,10 @@ export default {
                 //window.mst = res
                 res.props.label = (
                     <View style={{
-                        flex:1,
+                        //flex:1,
                         justifyContent: storage.oldUserListIcons ? "space-between": "flex-start",
-                        flexDirection: "row"
+                        flexDirection: "row",
+                        alignItems: "center"
                     }}
                     key="TabsV2MemberListStatusIconsView">
                         {res.props.label}
@@ -390,9 +391,11 @@ export default {
                             flexDirection: 'row'
                         }}>
                             <StatusIcons userId={user.id}/>
+                            
                         </View>
                     </View>
                 )
+                window.iv2 = res.props.label
 
                 if(!patchedAvatar){
                     unpatches.push(patcher.before("type", res.props.icon.type, (args)=>{
