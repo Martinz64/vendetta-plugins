@@ -1,6 +1,6 @@
 import { findByProps, findByStoreName } from "@vendetta/metro";
 import { ReactNative, chroma } from "@vendetta/metro/common";
-import { rawColors, semanticColors } from "@vendetta/ui";
+import { rawColors } from "@vendetta/ui";
 
 /*const { colors, meta } = findByProps("colors", "meta");
 const ThemeStore = findByStoreName("ThemeStore");
@@ -9,7 +9,7 @@ const color = meta.resolveSemanticColor(ThemeStore.theme, colors.STATUS_ONLINE)*
 
 const Colors = {
     online: chroma(rawColors.GREEN_360).hex(),
-    dnd: chroma(semanticColors.STATUS_DND).hex(),
+    dnd: chroma(rawColors.RED_400).hex(),
     idle: chroma(rawColors.YELLOW_300).hex(),
     offline: chroma(rawColors.PRIMARY_400).hex(),  
 };
