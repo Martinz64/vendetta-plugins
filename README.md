@@ -3,17 +3,17 @@
 ### Compact Chat (Deprecated!)
 A configurable reimplementation of compact mode for mobile.
 ```https://martinz64.github.io/vendetta-plugins/CompactChat```
-![Example image](./vendetta-plugins/images/CompactChat.png)
+![Example image](./images/CompactChat.png)
 
 ### Copy Role Color (Deprecated!)
 Copies role color hex code by long pressing on the roles in user profiles
 ```https://martinz64.github.io/vendetta-plugins/CopyRoleColor```
-![Example image](./vendetta-plugins/images/CopyRoleColor.png)
+![Example image](./images/CopyRoleColor.png)
 
 ### File Size On Picker
 Adds file sizes in the media picker
 ```https://martinz64.github.io/vendetta-plugins/FileSizeOnPicker```
-![Example image](./vendetta-plugins/images/FileSizeOnPicker.png)
+![Example image](./images/FileSizeOnPicker.png)
 
 ### No Compression (Deprecated!)
 Prevents Discord from compressing files when uploading
@@ -22,7 +22,7 @@ Prevents Discord from compressing files when uploading
 ### Platform Indicators
 Shows the devices someone is currently using discord on
 ```https://martinz64.github.io/vendetta-plugins/PlatformIndicators```
-![Example image](./vendetta-plugins/images/PlatformIndicators.png)
+![Example image](./images/PlatformIndicators.png)
 
 ### Screenshare Settings (Deprecated!)
 Adds additional settings when screensharing in VC
