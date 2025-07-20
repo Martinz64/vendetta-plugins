@@ -68,7 +68,7 @@ export default function StatusIcon(props) {
                     width: iconSize,
                     height: iconSize,
                     path: themableIcons[platform].path,
-                    allowTheming: true
+                    allowIconTheming: true
                 }}
             />
             
