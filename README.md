@@ -1,36 +1,29 @@
 # This is a small repository of Revenge/Bunny Plugins created by [Martin](https://github.com/Martinz64)
 
-### Compact Chat (Deprecated!)
-A configurable reimplementation of compact mode for mobile.
-```https://martinz64.github.io/vendetta-plugins/CompactChat```
+### [Compact Chat](https://martinz64.github.io/vendetta-plugins/CompactChat) (Deprecated!)
+- A configurable reimplementation of compact mode for mobile.
 ![Example image](./images/CompactChat.png)
 
-### Copy Role Color (Deprecated!)
-Copies role color hex code by long pressing on the roles in user profiles
-```https://martinz64.github.io/vendetta-plugins/CopyRoleColor```
+### [Copy Role Color](https://martinz64.github.io/vendetta-plugins/CopyRoleColor) (Deprecated!)
+- Copies role color hex code by long pressing on the roles in user profiles
 ![Example image](./images/CopyRoleColor.png)
 
-### File Size On Picker
-Adds file sizes in the media picker
-```https://martinz64.github.io/vendetta-plugins/FileSizeOnPicker```
+### [File Size On Picker](https://martinz64.github.io/vendetta-plugins/FileSizeOnPicker)
+- Adds file sizes in the media picker
 ![Example image](./images/FileSizeOnPicker.png)
 
-### No Compression (Deprecated!)
-Prevents Discord from compressing files when uploading
-```https://martinz64.github.io/vendetta-plugins/NoCompression```
+### [No Compression](https://martinz64.github.io/vendetta-plugins/NoCompression) (Deprecated!)
+- Prevents Discord from compressing files when uploading
 
-### Platform Indicators
-Shows the devices someone is currently using discord on
-```https://martinz64.github.io/vendetta-plugins/PlatformIndicators```
+### [Platform Indicators](https://martinz64.github.io/vendetta-plugins/PlatformIndicators)
+- Shows the devices someone is currently using discord on
 ![Example image](./images/PlatformIndicators.png)
 
-### Screenshare Settings (Deprecated!)
-Adds additional settings when screensharing in VC
-```https://martinz64.github.io/vendetta-plugins/ScreenshareSettings```
+### [Screenshare Settings](https://martinz64.github.io/vendetta-plugins/ScreenshareSettings) (Deprecated!)
+- Adds additional settings when screensharing in VC
 
-### Square profile pictures (Deprecated!)
-Square profile pictures
-```https://martinz64.github.io/vendetta-plugins/SquareProfilePics```
+### [Square profile pictures](https://martinz64.github.io/vendetta-plugins/SquareProfilePics) (Deprecated!)
+- Square profile pictures
 
 # How to install?
 Paste a plugin URL into the Plugins page of the client mod, following a basic format of:
