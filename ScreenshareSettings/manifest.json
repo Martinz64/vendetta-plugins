@@ -1,1 +1,1 @@
-{"name":"ScreenshareSettings","description":"Prevents Discord from compressing files when uploading","authors":[{"name":"MSMA","id":"307215253811363843"}],"main":"index.js","vendetta":{"icon":"ic_share_screen"},"hash":"00bde92f39a02b652dc51432b5b9fdef232bc050aa9128e381fc0e20c4e9a210"}
+{"name":"ScreenshareSettings","description":"Prevents Discord from compressing files when uploading","authors":[{"name":"MSMA","id":"307215253811363843"}],"main":"index.js","vendetta":{"icon":"ic_share_screen"},"hash":"5c2dc9a314b746b1243a2364fab2b1c644f3405752ba4885657334ffe3ede5e3"}
