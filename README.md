@@ -10,13 +10,13 @@
 ## Deprecated/discontinued plugins-
 ### [No Compression](https://martinz64.github.io/vendetta-plugins/NoCompression) (Deprecated!)
 - Prevents Discord from compressing files when uploading
->  ![Example image](./images/NoCompression)
+>  ![Example image](./images/NoCompression.png)
 ### [Screenshare Settings](https://martinz64.github.io/vendetta-plugins/ScreenshareSettings) (Deprecated!)
 - Adds additional settings when screensharing in VC
->  ![Example image](./images/ScreenshareSettings)
+>  ![Example image](./images/ScreenshareSettings.png)
 ### [Square profile pictures](https://martinz64.github.io/vendetta-plugins/SquareProfilePics) (Deprecated!)
 - Square profile pictures
->  ![Example image](./images/SquareProfilePics)
+>  ![Example image](./images/SquareProfilePics.png)
 ### [Compact Chat](https://martinz64.github.io/vendetta-plugins/CompactChat) (Deprecated!)
 - A configurable reimplementation of compact mode for mobile.
 > ![Example image](./images/CompactChat.png)
