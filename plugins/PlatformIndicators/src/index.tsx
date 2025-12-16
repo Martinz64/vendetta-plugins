@@ -30,7 +30,7 @@ export default {
         //i'm sorry for whoever has to interpret this
 
         //Big view patch
-        unpatches.push(patcher.after("render",View,(_,res) => {
+        /*unpatches.push(patcher.after("render",View,(_,res) => {
             return;
             if(storage.dmTopBar){
 
@@ -61,12 +61,12 @@ export default {
                     })
                 }
             }
-        }))
+        }))*/
 
 
 
         //Big pressable patch
-        const Pressable = findByDisplayName("Pressable",false); //importing from ReactNative doesn't work
+        /*const Pressable = findByDisplayName("Pressable",false); //importing from ReactNative doesn't work
         unpatches.push(patcher.before("render",Pressable.default.type,(args)=>{
             if(!args) return;
             if(!args[0]) return;
@@ -109,43 +109,7 @@ export default {
                 }
             }
             
-            //user list in non tabs v2
-            //might remove later
-            /*if(props.accessibilityRole == "button"){
-                if(!storage.userList) return;
-                if(props.children){
-                    if(props.children.length >= 2){
-
-                        if((props.children[0]?.props?.user && props.children[0]?.props?.channel) || storage.oldUserListIcons){
-                            //how many checks is too many?
-                            if(!props.children[0]) return;
-                            if(!props.children[0]?.props?.user) return;
-                            const uid = props.children[0]?.props?.user?.id
-
-
-                            if(!uid) return;
-                            //window.uuu = props
-                            if(!props.children?.find(m => m.key == "StatusIcons")){
-                                //props.children[0][1].props.children[0].props.children[0]
-                                props.children.push(
-                                //props.children[0][1]?.props?.children[0]?.props?.children?.push?.(
-                                    <View 
-                                        key="StatusIcons"
-                                        style={{
-                                            display: 'flex',
-                                    flexDirection: 'row'}}></View>
-                                )
-                            }
-
-                            //explota
-                            const icons = props.children?.find(m => m.key == "StatusIcons");                            
-                            //if(icons.props?.children){
-                                icons.props.children = <StatusIcons userId={uid}/>
-                            //}
-                        }
-                    }
-                }
-            }*/
+            
 
             //DM list on tabs v2
             //kinda broken ik
@@ -191,7 +155,7 @@ export default {
                 
             }
             
-        }));
+        }));*/
         
 
         const PresenceStore = findByStoreName("PresenceStore");
@@ -268,18 +232,64 @@ export default {
         //icons on profile
         //might explode in a future update
         //it in fact exploded lmao, saving for later
-        const DefaultName = findByName("DefaultName", false);
-        unpatches.push(patcher.after("default", DefaultName, (args, res) => {
-            const user = args[0]?.user;
-            if (user === undefined) return;
-            if(!res) return;
-            if(!user.id) return;
-            if(!storage.profileUsername)return;
-            res.props?.children[0]?.props?.children?.push(<StatusIcons userId={user.id}/>)
-        }));
+        //const DefaultName = findByName("DefaultName", false);
+        //unpatches.push(patcher.after("default", DefaultName, (args, res) => {
+        //    window.dnn1 = args
+        //    const user = args[0]?.user;
+        //    if (user === undefined) return;
+        //    if(!res) return;
+        //    if(!user.id) return;
+        //    if(!storage.profileUsername)return;
+        //    res.props?.children[0]?.props?.children?.push(<StatusIcons userId={user.id}/>)
+        //}));
 
-        const DisplayName = findByName("DisplayName", false);
-        unpatches.push(patcher.after("default", DisplayName, (args, res) => {
+
+        const UserProfileContent = findByTypeName("UserProfileContent");
+
+        unpatches.push(patcher.after("type", UserProfileContent, (args, res) => {
+            //window.dnn1 = args
+            //window.dnn2 = res
+            //console.log("PROFILE",args,res)
+            let primaryInfo = findInReactTree(res, (c) => c?.type?.name == "PrimaryInfo")
+            //window.pri = primaryInfo
+            patcher.after("type",primaryInfo, (args,res)=>{
+                if(res?.type?.name == "UserProfilePrimaryInfo"){
+                    patcher.after("type", res, (args,res)=>{
+                        let displayName = findInReactTree(res, (c) => c?.type?.name == "DisplayName")
+                        
+                            patcher.after("type", displayName, (args,res)=>{
+                                //window.priii1 = args
+                                //window.priii2 = res
+                                let userId = args[0]?.user?.id
+                                if(userId){
+                                    res.props.children.push(
+                                        <PresenceUpdatedContainer key="UserProfileIcons">
+                                            <StatusIcons userId={userId}/>
+                                        </PresenceUpdatedContainer>
+                                    )
+                                }
+                            })
+                        //console.log("PRI2", args,res)
+                        //window.prii1 = args
+                        //window.prii2 = res
+                    })
+                }
+                //console.log("PRI1", args,res)
+                //window.pri1 = args
+                //window.pri2 = res
+            })
+        }))
+        
+        //window.dnp1 = "aa"
+
+        //const DisplayName = findByName("DisplayName", false);
+        //unpatches.push(patcher.after("default", DisplayName, (args, res) => {
+        //const UserProfilePrimaryInfo = findByName("UserProfilePrimaryInfo", false);
+        const DisplayName = findByProps("DisplayName");
+        unpatches.push(patcher.after("DisplayName", DisplayName, (args, res) => {
+            console.log("DISPLAYNAME",args,res)
+            window.dn1 = args
+            window.dn2 = res
             const user = args[0]?.user;
             if (user === undefined) return;
             if(!res) return;
