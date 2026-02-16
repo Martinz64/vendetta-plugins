@@ -63,9 +63,7 @@ export default function StatusIcon(props) {
     //useProxy(storage)
 
     // should fix crashing if discord comes up with anything new
-    // TODO: Add ? icon in the else
     if(themableIcons[platform]){
-
         return (
             <View>
                 <Image
@@ -85,10 +83,14 @@ export default function StatusIcon(props) {
             </View>
         )
     } else {
-
         return (
             <View>
-                
+                <View style={{
+                    width: iconSize,
+                    height: iconSize,
+                    borderRadius: 100,
+                    backgroundColor: color
+                }}></View>
             </View>
         )
     }
