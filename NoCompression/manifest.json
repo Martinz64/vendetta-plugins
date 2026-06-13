@@ -1,1 +1,1 @@
-{"name":"NoCompression","description":"Prevents Discord from compressing files when uploading","authors":[{"name":"MSMA","id":"307215253811363843"}],"main":"index.js","vendetta":{"icon":"ic_file_upload_24px"},"hash":"b57d0560f8d67ec86c1b7cc6b23861729e6cc837546fcb900d2c53178979d497"}
+{"name":"NoCompression","description":"Prevents Discord from compressing files when uploading","authors":[{"name":"MSMA","id":"307215253811363843"}],"main":"index.js","vendetta":{"icon":"ic_file_upload_24px"},"hash":"6789e57091ec07ff23731a6b3407d33d9ecfb014817c6cddf678179db54d689b"}
