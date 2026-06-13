@@ -38,6 +38,8 @@ export default {
         });
 
         const Pressable = findByDisplayName("Pressable",false); //importing from ReactNative doesn't work
+
+        //unpatch = before("render",Pressable.default.type,(args)=>{
         unpatch = before("type",Pressable.default,(args)=>{
             if(!args) return;
             if(!args[0]) return;
@@ -46,10 +48,10 @@ export default {
 
             if(!props) return;
             if(!props.modifiedByFileSizeOnPicker){
-                if(props?.children?.[0]?.props?.source){
+                if(props?.children?.[0]?.props?.localImageSource){
                     props.modifiedByFileSizeOnPicker = true
                     props.originalChildren = props.children
-                    
+
                     let fileUrl = null
                     if(!props.skip){
                         const img = findInReactTree(props.originalChildren, m => m.props?.localImageSource)
