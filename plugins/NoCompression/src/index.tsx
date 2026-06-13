@@ -6,114 +6,32 @@ import { React, ReactNative } from "@vendetta/metro/common";
 let unpatches = [];
 export default {
     onLoad: () => {
-
-        const { NativeModules } = ReactNative;
-
-        //> after("getUploadTarget",findByProps("UploadTargets"), (args,res)=>{console.log("ut",args,res)})
-
-        //fix for >215
-        /*unpatches.push(after("getUploadTarget",findByProps("UploadTargets"), function(args,res){
-            //console.log("ut",args,res,this)
-            //window.ut = res
-            //return;
-            //res.shouldReactNativeCompressUploads = false
-
-            /*Object.defineProperty(res, "shouldReactNativeCompressUploads", {
-                get: function(){
-                    return false;
-                }
-            })*//*
-        }))*/
-
-        
         const CloudUpload = findByProps('CloudUpload').CloudUpload;
-        /*unpatches.push(before('reactNativeCompressAndExtractData', CloudUpload.prototype, function(args) {
-
-            console.log(args)
-            console.log(this)
-            /*return;
-
-            //disable compression here
-            this.reactNativeFilePrepped = true;
-            this.currentSize = this.preCompressionSize;
-
-            //add extension to files that don't have one
-            if(this.mimeType == 'image/png' && !this.filename.endsWith(".png")){
-                this.filename = this.filename + '.png'
-            }
-            if(this.mimeType == 'image/jpg' && (!this.filename.endsWith(".jpg") || !this.filename.endsWith(".jpeg"))){
-                this.filename = this.filename + '.jpg'
-            }*//*
-
-        }));*/
-
         unpatches.push(after('reactNativeCompressAndExtractData', CloudUpload.prototype, function(args, res) {
-            console.log("compressafter", this, args,res)
-
-
-            /*res = res.then((a) => {
-                console.log("PROM", a)
-                return a
-            })*/
+            //console.log("compressafter", this, args,res)
 
             let media = this
-
-            /*res = res.then((a) => {
-                a.reactNativeFilePrepped = true;
-                a.currentSize = a.preCompressionSize;
-
-                //add extension to files that don't have one
-                if(a.mimeType == 'image/png' && !a.filename.endsWith(".png")){
-                    a.filename = a.filename + '.png'
-                }
-                if(a.mimeType == 'image/jpg' && (!a.filename.endsWith(".jpg") || !a.filename.endsWith(".jpeg"))){
-                    a.filename = a.filename + '.jpg'
-                }
-
-
-                return a;
-            })*/
-
             res = new Promise((resolve) => {
                 media.reactNativeFilePrepped = true;
-                //media.currentSize = media.preCompressionSize;
-                media.postCompressionSize = 1000
-                media.preCompressionSize = 1000;
-                media.currentSize = 1000;
+                if(media.preCompressionSize){
+                    media.currentSize = media.preCompressionSize;
+                    media.postCompressionSize = media.preCompressionSize;
+                } else { // just in case
+                    media.postCompressionSize = 1000
+                    media.preCompressionSize = 1000;
+                    media.currentSize = 1000;
+                }
+                //window.aaa = media;
 
 
-                //add extension to files that don't have one
-                if(media.mimeType == 'image/png' && !media.filename.endsWith(".png")){
+                //add extension to files that don't have one (just in case)
+                if(media.mimeType == 'image/png' && !media.filename.toLowerCase().endsWith(".png")){
                     media.filename = media.filename + '.png'
                 }
-                if(media.mimeType == 'image/jpg' && (!media.filename.endsWith(".jpg") || !media.filename.endsWith(".jpeg"))){
+                if(media.mimeType == 'image/jpg' && !(media.filename.toLowerCase().endsWith(".jpg") || media.filename.toLowerCase().endsWith(".jpeg"))){
                     media.filename = media.filename + '.jpg'
                 }
-    
-                
-
-                /*const FileManager = NativeModules.NativeFileModule ?? NativeModules.RTNFileManager ?? NativeModules.DCDFileManager
-                if(media?.item?.originalUri){
-                    FileManager.getSize(media?.item?.originalUri).then(size => {
-                        media.postCompressionSize = size
-                        media.preCompressionSize = size;
-                        media.currentSize = size;
-    
-                        console.log("PROM", media)
-                        resolve(media);
-    
-                    }).catch(()=>{
-                        console.log("PROM2", media)
-                        resolve(media);
-                    })
-                } else {
-                    console.log("PROM3", media)
-                    resolve(media);
-                }*/
-
                 resolve(media);
-                
-                
             })
 
             return res
