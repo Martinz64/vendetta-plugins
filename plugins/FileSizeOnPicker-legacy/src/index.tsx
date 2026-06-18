@@ -22,15 +22,15 @@ export default {
                 //backgroundColor: semanticColors.BACKGROUND_ACCENT,
                 backgroundColor: '#1e1f2280',
                 borderRadius: 4,
-                paddingHorizontal: 4,
-                paddingVertical: 2,
+                paddingHorizontal: 8,
+                paddingVertical: 4,
                 position: 'absolute',
-                top: 3,
-                left: 3
+                top: 6,
+                left: 6
             },
             sizeText: {
                 includeFontPadding: false,
-                fontSize: 10,
+                fontSize: 12,
                 //color: semanticColors.TEXT_NORMAL,
                 color: "white",
                 fontFamily: Constants.Fonts.PRIMARY_BOLD,
@@ -40,37 +40,37 @@ export default {
         const Pressable = findByDisplayName("Pressable",false); //importing from ReactNative doesn't work
 
         unpatch = before("render",Pressable.default.type,(args)=>{
-        //unpatch = before("type",Pressable.default,(args)=>{
             if(!args) return;
             if(!args[0]) return;
 
             const [ props ] = args;
 
             if(!props) return;
-            if(!props.modifiedByFileSizeOnPicker){
-                if(props?.children?.[0]?.props?.localImageSource){
-                    props.modifiedByFileSizeOnPicker = true
-                    props.originalChildren = props.children
+            if(props.accessibilityRole != "imagebutton") return;
+            
+            /*props.children[props.children.length - 1] = <Text>AAAAA</Text>
+            return;*/
 
-                    let fileUrl = null
-                    if(!props.skip){
-                        const img = findInReactTree(props.originalChildren, m => m.props?.localImageSource)
-                        //window.iiimmg = img
-                        if(img){
-                            fileUrl = img.props.localImageSource.uri
-                        } else {
-                            props.skip = true
-                        }
-                    } else {
-                        return
-                    }
-                    props.children = <View style={styles.sizeTagWrapper}>
-                        {props.originalChildren}
-                        <View style={styles.sizeTag}>
-                            <SizeTag url={fileUrl} style={styles.sizeText}/>
-                        </View>
-                    </View>
+            if(!props.oldChildren){
+                props.oldChildren = props.children;
+            }
+            if(!props.skip){
+                if(!findInReactTree(props.oldChildren, m => m.props?.localImageSource)){
+                    props.skip = true
                 }
+            } else {
+                return
+            }
+
+            const fileUrl = props.oldChildren[0]?.props?.source?.uri;
+            if(fileUrl){
+                props.children = 
+                <View style={styles.sizeTagWrapper}>
+                    {props.oldChildren}
+                    <View style={styles.sizeTag}>
+                        <SizeTag url={fileUrl} style={styles.sizeText}/>
+                    </View>
+                </View>
             }
         });
     },
