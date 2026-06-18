@@ -1,1 +1,1 @@
-{"name":"FileSizeOnPicker Legacy","description":"Show the file sizes in the media picker (for older clients)","authors":[{"name":"MSMA","id":"307215253811363843"}],"main":"index.js","vendetta":{"icon":"ic_image"},"hash":"a83034e5884ed9dd7696183a2334aacc4570849ee8401d1e0bfc644598802368"}
+{"name":"FileSizeOnPicker Legacy","description":"Show the file sizes in the media picker (for older clients)","authors":[{"name":"MSMA","id":"307215253811363843"}],"main":"index.js","vendetta":{"icon":"ic_image"},"hash":"c0bde486ed52ff66eaf79eff23bbb941b02451ae21d6f47ab174f391c07f1804"}
