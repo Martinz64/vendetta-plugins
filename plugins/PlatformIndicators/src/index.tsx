@@ -295,7 +295,11 @@ export default {
             if(!res) return;
             if(!user.id) return;
             if(!storage.profileUsername)return;
-            res.props?.children?.props?.children[0]?.props?.children?.push(<StatusIcons userId={user.id}/>)
+            if(findInReactTree(res, m => m?.props?.key == "DisplayNameStatusIcons")) return;
+            //res.props?.children?.props?.children[0]?.props?.children?.push(<StatusIcons userId={user.id}/>)
+            const row = findInReactTree(res, m => m?.props?.style?.flexDirection == "row");
+
+            row.props.children.push(<StatusIcons userId={user.id}/>)
         }));
 
         const Status = findByName("Status", false);
@@ -329,14 +333,16 @@ export default {
             }))
         }
 
+
+        //https://github.com/everestmcarthur/revenge-plugins/blob/main/plugins/staff-tags/src/patches/details.tsx
         let patchedAvatar = false
         // user list on tabs v2
         const rowPatch = ([{ user }], res) => {
             if(!storage.userList) return;
-            
+
             const modifiedStatusIcons = findInReactTree(res?.props?.label, (c) => c.key == "TabsV2MemberListStatusIconsView");
             if(!modifiedStatusIcons){
-                //window.mst = res
+                window.mst = res
                 res.props.label = (
                     <View style={{
                         //flex:1,
@@ -355,14 +361,16 @@ export default {
                 )
                 //window.iv2 = res.props.label
                 if(!patchedAvatar){
-                    unpatches.push(patcher.before("type", res.props.icon.type, (args)=>{
-                        //console.log("AVATAR", args,res)
-                        //window.av = args
-                        if(storage.removeDefaultMobile){
-                            args[0].isMobileOnline = false
-                        }
-                    }))
-                    patchedAvatar = true
+                    if(res?.props?.icon?.type){
+                        unpatches.push(patcher.before("type", res.props.icon.type, (args)=>{
+                            //console.log("AVATAR", args,res)
+                            //window.av = args
+                            if(storage.removeDefaultMobile){
+                                args[0].isMobileOnline = false
+                            }
+                        }))
+                        patchedAvatar = true
+                    }
                 }
             }
 
@@ -376,160 +384,51 @@ export default {
 
 
 
+        /*const MessagesItemChannelLegend = findByProps("MessagesItemChannelLegend").MessagesItemChannelLegend;
+        unpatches.push(patcher.after("type", MessagesItemChannelLegend, (args, res) => {
+        }))*/
+
 
         //Newest dm list patch (it's shit)
         //Requires forcing a re-render of the whole list manually
         const MessagesItemChannelContent = findByTypeName("MessagesItemChannelContent")
         unpatches.push(patcher.after("type", MessagesItemChannelContent, (args, res) => {
-            //console.log("MessagesItemChannelContent-B", args, res)
+            console.log("MessagesItemChannelContent-B", args, res)
+            //window.micc = res
             const channel = args[0]?.channel
             if(channel?.recipients?.length == 1){
                 const userId = channel.recipients[0]
-                const textContainer = findInReactTree(res, m => m?.props?.children?.[0]?.props?.variant =="redesign/channel-title/semibold")
-                //textContainer.props.children.push(<View><Text>{userId}</Text></View>)
-                textContainer?.props?.children?.push(<View key="TabsV2RedesignDMListIcons" style={{
-                    flexDirection: 'row'
-                }}>
-                    {debugLabels ? <Text>TV2RDMLI</Text> : <StatusIcons userId={userId}/>}
-                </View>)
-                //res.props.children[0].props.children.push(<View><Text>{userId}</Text></View>)
-            }
-            //const userId = messageContainer?.props?.message?.author?.id
-            //const userId = messageContainer?.props?.channel?.ownerId
+                
+                
+                //took some inspiration from here
+                //https://github.com/everestmcarthur/revenge-plugins/blob/main/plugins/staff-tags/src/patches/details.tsx
+                
             
-        }))
-        /*const MessagesItemChannel = findByTypeName("MessagesItemChannel")
-        unpatches.push(patcher.after("type", MessagesItemChannel, (args, res) => {
-            console.log("MessagesItemChannel-B", args, res)
-            
-            window.dml2 = res
-            window.dmla2 = args
-            /*const messageContainer = findInReactTree(res, m => m?.props?.channel)
+                if(findInReactTree(res, m => m?.key == "TabsV2RedesignDMListIcons2")) return;
 
-            const channel = messageContainer?.props?.channel
-
-            if(channel?.recipients?.length == 1){
-                const userId = channel.recipients[0]
-                res.props.children[0].props.children.push(<View><Text>{userId}</Text></View>)
-            }
-
-            //const userId = messageContainer?.props?.message?.author?.id
-            //const userId = messageContainer?.props?.channel?.ownerId
-            
-        }))*/
-
-
-
-
-
-        //Saving for later (tests)
-        /*unpatches.push(patcher.before("PureComponentWrapper", findByProps("PureComponentWrapper"), (args) => {
-            console.log("PureComponentWrapper")
-            window.pcw = args
-
-            args[0].renderer = (a) => {
-                return <View><Text>PureComponentWrapper</Text></View>
-            }
-        }))*/
-        
-        /*
-        unpatches.push(patcher.after("PureComponentWrapper", findByProps("PureComponentWrapper"), (args,res) => {
-            console.log("PureComponentWrapper")
-            window.pcw = res
-
-
-            patcher.after("renderer", res.props, (args,res) => {
-                console.log("RENDERER")
-                window.renderer1 = res
-                res.props.children = [<View><Text>renderer1</Text></View>,res.props.children]
-            })
-
-        
-        }))*/
-
-        /*unpatches.push(patcher.before("render", findByProps("PureComponentWrapper").PureComponentWrapper.prototype, (args) => {
-            console.log("PureComponentWrapper.render")
-            window.pcwr = args
-            return <View>
-                <Text>AABBBB</Text>
-            </View>
-        }))*/
-
-
-        /*unpatches.push(patcher.before("constructor", findByProps("PureComponentWrapper").PureComponentWrapper.prototype, (args) => {
-            console.log("PureComponentWrapper.render")
-            window.pcwrc = args
-        }))*/
-
-
-        /*findByPropsAll("CellContainer").forEach((CellContainer) => unpatches.push(patcher.before("CellContainer", CellContainer, (args) => {
-            console.log("CellContainer")
-            window.cc1 = args
-
-        })))*/
-
-        /*unpatches.push(patcher.before("CellContainer", findByProps("CellContainer"), (args) => {
-            console.log("CellContainer")
-            window.cc1 = args
-        }))*/
-
-        /*const ViewRenderer = findByName("ViewRenderer",false)
-        unpatches.push(patcher.before("default", ViewRenderer, (args) => {
-            //return;
-
-            window.vrrargs = args
-
-            args[0].childRenderer = (a,b,c,d) => {
-                return <View><Text>childRenderer</Text></View>
-            }
-
-            return;
-
-            const origrender = args[0].renderItemContainer
-            args[0].renderItemContainer = (a,b) => {
-                //console.log("render",a,b)
-                let retval = origrender(a,b)
-                //console.log("render-ret", retval)
-                window.vrrargs2 = retval
-                //retval.props.children = <View><Text>UWU</Text></View>
-
-                if(retval?.props?.children?.props?.renderer){
-                    retval.props.children.props.renderer = (a) => {
-                        return <View><Text>UWU</Text></View>
-                    }
+                const nameContainer = findInReactTree(res, m => m?.props?.children?.some(h => h?.props?.ellipsizeMode))
+                window.nc = nameContainer
+                
+                if(nameContainer?.props?.children){
+                    const orig = nameContainer.props.children[0]
+                    nameContainer.props.children = <View key="TabsV2RedesignDMListIcons2" style={{
+                        flexDirection: 'row'
+                    }}>
+                        {orig}
+                        <StatusIcons userId={userId}/>
+                    </View>
                 }
-
-
-                return retval
             }
-
-
-
-            const itemlayout = args[0].onItemLayout
-            args[0].onItemLayout = (a,b) => {
-                //console.log("render",a,b)
-                let retval = itemlayout(a,b)
-                //console.log("render-ret", retval)
-                window.vrrargs3 = retval
-                //retval.props.children = <View><Text>UWU</Text></View>
-
-
-                return retval
-            }
+            //nameContainer.props.children = <Text>hhh</Text>
+            //const userId = messageContainer?.props?.message?.author?.id
+            //const userId = messageContainer?.props?.channel?.ownerId
+            
         }))
-        unpatches.push(patcher.after("default", ViewRenderer, (args, res) => {
-            console.log("VRRR")
-            window.viewrender = res
-        }))*/
 
 
 
 
-
-
-
-
-        },
+    },
     onUnload: () => {
         unpatches.forEach(u => u());
 
