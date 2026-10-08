@@ -1,13 +1,12 @@
 import { patcher } from "@vendetta";
-import { findByDisplayName, findByName, findByProps, findByPropsAll, findByStoreName, findByTypeNameAll, findByTypeName } from "@vendetta/metro";
-import {General} from "@vendetta/ui/components"
+import { findByName, findByProps, findByStoreName, findByTypeNameAll, findByTypeName } from "@vendetta/metro";
+import { General } from "@vendetta/ui/components";
 import { findInReactTree } from "@vendetta/utils";
 import StatusIcons from "./StatusIcons";
-import { getAssetByName, getAssetIDByName } from "@vendetta/ui/assets";
+import { getAssetIDByName } from "@vendetta/ui/assets";
 import { storage } from "@vendetta/plugin";
 import Settings from "./settings";
-import React, { useState, useEffect } from 'react';
-import RerenderContainer from "./RerenderContainer";
+import React from 'react';
 import PresenceUpdatedContainer from "./PresenceUpdatedContainer";
 const {Text,View } = General;
 
@@ -287,9 +286,9 @@ export default {
         //const UserProfilePrimaryInfo = findByName("UserProfilePrimaryInfo", false);
         const DisplayName = findByProps("DisplayName");
         unpatches.push(patcher.after("DisplayName", DisplayName, (args, res) => {
-            console.log("DISPLAYNAME",args,res)
-            window.dn1 = args
-            window.dn2 = res
+            //console.log("DISPLAYNAME",args,res)
+            //window.dn1 = args
+            //window.dn2 = res
             const user = args[0]?.user;
             if (user === undefined) return;
             if(!res) return;
@@ -342,7 +341,7 @@ export default {
 
             const modifiedStatusIcons = findInReactTree(res?.props?.label, (c) => c.key == "TabsV2MemberListStatusIconsView");
             if(!modifiedStatusIcons){
-                window.mst = res
+                //window.mst = res
                 res.props.label = (
                     <View style={{
                         //flex:1,
@@ -360,7 +359,7 @@ export default {
                     </View>
                 )
                 //window.iv2 = res.props.label
-                if(!patchedAvatar){
+                /*if(!patchedAvatar){
                     if(res?.props?.icon?.type){
                         unpatches.push(patcher.before("type", res.props.icon.type, (args)=>{
                             //console.log("AVATAR", args,res)
@@ -371,7 +370,7 @@ export default {
                         }))
                         patchedAvatar = true
                     }
-                }
+                }*/
             }
 
             
@@ -393,7 +392,7 @@ export default {
         //Requires forcing a re-render of the whole list manually
         const MessagesItemChannelContent = findByTypeName("MessagesItemChannelContent")
         unpatches.push(patcher.after("type", MessagesItemChannelContent, (args, res) => {
-            console.log("MessagesItemChannelContent-B", args, res)
+            //console.log("MessagesItemChannelContent-B", args, res)
             //window.micc = res
             const channel = args[0]?.channel
             if(channel?.recipients?.length == 1){
@@ -407,7 +406,7 @@ export default {
                 if(findInReactTree(res, m => m?.key == "TabsV2RedesignDMListIcons2")) return;
 
                 const nameContainer = findInReactTree(res, m => m?.props?.children?.some(h => h?.props?.ellipsizeMode))
-                window.nc = nameContainer
+                //window.nc = nameContainer
                 
                 if(nameContainer?.props?.children){
                     const orig = nameContainer.props.children[0]
